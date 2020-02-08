@@ -1,0 +1,736 @@
+{
+    "GetStationBoardResult": {
+        "generatedAt": "2019-08-08T17:52:49.478Z",
+        "locationName": "London Paddington",
+        "crs": "PAD",
+        "nrccMessages": {
+            "message": [
+                "<P>Trains at Bath Spa may be delayed or cancelled. More details can be found in <A href=\"http://nationalrail.co.uk/service_disruptions/228334.aspx\">Latest Travel News.</A></P>"
+            ]
+        },
+        "platformAvailable": true,
+        "trainServices": {
+            "service": [
+                {
+                    "std": "18:42",
+                    "etd": "Delayed",
+                    "operator": "Great Western Railway",
+                    "operatorCode": "GW",
+                    "serviceType": "train",
+                    "serviceID": "I306iS99js/1Q73QGykvFA==",
+                    "rsid": "GW353500",
+                    "origin": {
+                        "location": [
+                            {
+                                "locationName": "London Paddington",
+                                "crs": "PAD"
+                            }
+                        ]
+                    },
+                    "destination": {
+                        "location": [
+                            {
+                                "locationName": "Reading",
+                                "crs": "RDG"
+                            }
+                        ]
+                    },
+                    "subsequentCallingPoints": {
+                        "callingPointList": {
+                            "callingPoint": [
+                                {
+                                    "locationName": "Slough",
+                                    "crs": "SLO",
+                                    "st": "18:58",
+                                    "et": "Delayed"
+                                },
+                                {
+                                    "locationName": "Burnham",
+                                    "crs": "BNM",
+                                    "st": "19:02",
+                                    "et": "Delayed"
+                                },
+                                {
+                                    "locationName": "Maidenhead",
+                                    "crs": "MAI",
+                                    "st": "19:07",
+                                    "et": "Delayed"
+                                },
+                                {
+                                    "locationName": "Twyford",
+                                    "crs": "TWY",
+                                    "st": "19:14",
+                                    "et": "Delayed"
+                                },
+                                {
+                                    "locationName": "Reading",
+                                    "crs": "RDG",
+                                    "st": "19:21",
+                                    "et": "Delayed"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "std": "18:52",
+                    "etd": "On time",
+                    "operator": "Great Western Railway",
+                    "operatorCode": "GW",
+                    "serviceType": "train",
+                    "serviceID": "dXITR9EOLBjCyx347JLSqA==",
+                    "rsid": "GW751700",
+                    "origin": {
+                        "location": [
+                            {
+                                "locationName": "London Paddington",
+                                "crs": "PAD"
+                            }
+                        ]
+                    },
+                    "destination": {
+                        "location": [
+                            {
+                                "locationName": "Oxford",
+                                "crs": "OXF"
+                            }
+                        ]
+                    },
+                    "subsequentCallingPoints": {
+                        "callingPointList": {
+                            "callingPoint": [
+                                {
+                                    "locationName": "Reading",
+                                    "crs": "RDG",
+                                    "st": "19:17",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Oxford",
+                                    "crs": "OXF",
+                                    "st": "19:43",
+                                    "et": "On time"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "sta": "18:53",
+                    "eta": "19:05",
+                    "platform": "3",
+                    "operator": "Great Western Railway",
+                    "operatorCode": "GW",
+                    "serviceType": "train",
+                    "serviceID": "q/v02v5fM20DMXtFWKOMAg==",
+                    "rsid": "GW224100",
+                    "origin": {
+                        "location": [
+                            {
+                                "locationName": "Bedwyn",
+                                "crs": "BDW"
+                            }
+                        ]
+                    },
+                    "destination": {
+                        "location": [
+                            {
+                                "locationName": "London Paddington",
+                                "crs": "PAD"
+                            }
+                        ]
+                    },
+                    "previousCallingPoints": {
+                        "callingPointList": {
+                            "callingPoint": [
+                                {
+                                    "locationName": "Bedwyn",
+                                    "crs": "BDW",
+                                    "st": "17:38",
+                                    "at": "17:52"
+                                },
+                                {
+                                    "locationName": "Hungerford",
+                                    "crs": "HGD",
+                                    "st": "17:44",
+                                    "at": "17:58"
+                                },
+                                {
+                                    "locationName": "Kintbury",
+                                    "crs": "KIT",
+                                    "st": "17:48",
+                                    "at": "18:02"
+                                },
+                                {
+                                    "locationName": "Newbury",
+                                    "crs": "NBY",
+                                    "st": "17:55",
+                                    "at": "18:10"
+                                },
+                                {
+                                    "locationName": "Thatcham",
+                                    "crs": "THA",
+                                    "st": "18:00",
+                                    "at": "18:14"
+                                },
+                                {
+                                    "locationName": "Aldermaston",
+                                    "crs": "AMT",
+                                    "st": "18:06",
+                                    "at": "18:20"
+                                },
+                                {
+                                    "locationName": "Theale",
+                                    "crs": "THE",
+                                    "st": "18:11",
+                                    "at": "18:25"
+                                },
+                                {
+                                    "locationName": "Reading",
+                                    "crs": "RDG",
+                                    "st": "18:22",
+                                    "at": "18:36"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "std": "18:55",
+                    "etd": "On time",
+                    "platform": "6",
+                    "operator": "Heathrow Express",
+                    "operatorCode": "HX",
+                    "serviceType": "train",
+                    "serviceID": "dbL2y2C5phTL2Xw65KeFfw==",
+                    "rsid": "HX010000",
+                    "origin": {
+                        "location": [
+                            {
+                                "locationName": "London Paddington",
+                                "crs": "PAD"
+                            }
+                        ]
+                    },
+                    "destination": {
+                        "location": [
+                            {
+                                "locationName": "Heathrow Airport T5",
+                                "crs": "HWV"
+                            }
+                        ]
+                    },
+                    "subsequentCallingPoints": {
+                        "callingPointList": {
+                            "callingPoint": [
+                                {
+                                    "locationName": "Heathrow Airport T123",
+                                    "crs": "HXX",
+                                    "st": "19:10",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Heathrow Airport T5",
+                                    "crs": "HWV",
+                                    "st": "19:16",
+                                    "et": "On time"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "std": "18:55",
+                    "etd": "On time",
+                    "platform": "14",
+                    "operator": "Great Western Railway",
+                    "operatorCode": "GW",
+                    "serviceType": "train",
+                    "serviceID": "eaqFqiM77Wauv86/529Ulw==",
+                    "rsid": "GW349400",
+                    "origin": {
+                        "location": [
+                            {
+                                "locationName": "London Paddington",
+                                "crs": "PAD"
+                            }
+                        ]
+                    },
+                    "destination": {
+                        "location": [
+                            {
+                                "locationName": "Maidenhead",
+                                "crs": "MAI"
+                            }
+                        ]
+                    },
+                    "subsequentCallingPoints": {
+                        "callingPointList": {
+                            "callingPoint": [
+                                {
+                                    "locationName": "Slough",
+                                    "crs": "SLO",
+                                    "st": "19:20",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Burnham",
+                                    "crs": "BNM",
+                                    "st": "19:25",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Maidenhead",
+                                    "crs": "MAI",
+                                    "st": "19:30",
+                                    "et": "On time"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "sta": "18:55",
+                    "eta": "18:58",
+                    "platform": "12",
+                    "operator": "TFL Rail",
+                    "operatorCode": "XR",
+                    "serviceType": "train",
+                    "serviceID": "/ZYfLTC5SD9xlDa9fmBv9A==",
+                    "rsid": "XR229800",
+                    "origin": {
+                        "location": [
+                            {
+                                "locationName": "Heathrow Airport T4",
+                                "crs": "HAF"
+                            }
+                        ]
+                    },
+                    "destination": {
+                        "location": [
+                            {
+                                "locationName": "London Paddington",
+                                "crs": "PAD"
+                            }
+                        ]
+                    },
+                    "previousCallingPoints": {
+                        "callingPointList": {
+                            "callingPoint": [
+                                {
+                                    "locationName": "Heathrow Airport T4",
+                                    "crs": "HAF",
+                                    "st": "18:22",
+                                    "at": "On time"
+                                },
+                                {
+                                    "locationName": "Heathrow Airport T123",
+                                    "crs": "HXX",
+                                    "st": "18:28",
+                                    "at": "On time"
+                                },
+                                {
+                                    "locationName": "Hayes & Harlington",
+                                    "crs": "HAY",
+                                    "st": "18:34",
+                                    "at": "18:36"
+                                },
+                                {
+                                    "locationName": "Southall",
+                                    "crs": "STL",
+                                    "st": "18:38",
+                                    "at": "18:40"
+                                },
+                                {
+                                    "locationName": "Hanwell",
+                                    "crs": "HAN",
+                                    "st": "18:41",
+                                    "at": "18:45"
+                                },
+                                {
+                                    "locationName": "West Ealing",
+                                    "crs": "WEA",
+                                    "st": "18:43",
+                                    "at": "18:48"
+                                },
+                                {
+                                    "locationName": "Ealing Broadway",
+                                    "crs": "EAL",
+                                    "st": "18:46",
+                                    "at": "18:51"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "std": "18:59",
+                    "etd": "On time",
+                    "platform": "11",
+                    "operator": "Great Western Railway",
+                    "operatorCode": "GW",
+                    "serviceType": "train",
+                    "serviceID": "qvAjEhxRUhaGcyoN21/jgw==",
+                    "rsid": "GW000100",
+                    "origin": {
+                        "location": [
+                            {
+                                "locationName": "London Paddington",
+                                "crs": "PAD"
+                            }
+                        ]
+                    },
+                    "destination": {
+                        "location": [
+                            {
+                                "locationName": "Newbury",
+                                "crs": "NBY"
+                            }
+                        ]
+                    },
+                    "subsequentCallingPoints": {
+                        "callingPointList": {
+                            "callingPoint": [
+                                {
+                                    "locationName": "Ealing Broadway",
+                                    "crs": "EAL",
+                                    "st": "19:07",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Southall",
+                                    "crs": "STL",
+                                    "st": "19:12",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Hayes & Harlington",
+                                    "crs": "HAY",
+                                    "st": "19:16",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "West Drayton",
+                                    "crs": "WDT",
+                                    "st": "19:21",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Iver",
+                                    "crs": "IVR",
+                                    "st": "19:24",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Langley",
+                                    "crs": "LNY",
+                                    "st": "19:27",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Slough",
+                                    "crs": "SLO",
+                                    "st": "19:31",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Burnham",
+                                    "crs": "BNM",
+                                    "st": "19:36",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Taplow",
+                                    "crs": "TAP",
+                                    "st": "19:39",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Maidenhead",
+                                    "crs": "MAI",
+                                    "st": "19:43",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Twyford",
+                                    "crs": "TWY",
+                                    "st": "19:51",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Reading",
+                                    "crs": "RDG",
+                                    "st": "20:00",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Reading West",
+                                    "crs": "RDW",
+                                    "st": "20:13",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Theale",
+                                    "crs": "THE",
+                                    "st": "20:19",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Aldermaston",
+                                    "crs": "AMT",
+                                    "st": "20:23",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Midgham",
+                                    "crs": "MDG",
+                                    "st": "20:26",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Thatcham",
+                                    "crs": "THA",
+                                    "st": "20:30",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Newbury Racecourse",
+                                    "crs": "NRC",
+                                    "st": "20:34",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Newbury",
+                                    "crs": "NBY",
+                                    "st": "20:37",
+                                    "et": "On time"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "sta": "18:59",
+                    "eta": "19:01",
+                    "platform": "14",
+                    "operator": "Great Western Railway",
+                    "operatorCode": "GW",
+                    "serviceType": "train",
+                    "serviceID": "9KIbNKma41MSUwy4eWpoDQ==",
+                    "rsid": "GW465500",
+                    "origin": {
+                        "location": [
+                            {
+                                "locationName": "Maidenhead",
+                                "crs": "MAI"
+                            }
+                        ]
+                    },
+                    "destination": {
+                        "location": [
+                            {
+                                "locationName": "London Paddington",
+                                "crs": "PAD"
+                            }
+                        ]
+                    },
+                    "previousCallingPoints": {
+                        "callingPointList": {
+                            "callingPoint": [
+                                {
+                                    "locationName": "Maidenhead",
+                                    "crs": "MAI",
+                                    "st": "18:13",
+                                    "at": "On time"
+                                },
+                                {
+                                    "locationName": "Burnham",
+                                    "crs": "BNM",
+                                    "st": "18:17",
+                                    "at": "On time"
+                                },
+                                {
+                                    "locationName": "Slough",
+                                    "crs": "SLO",
+                                    "st": "18:22",
+                                    "at": "On time"
+                                },
+                                {
+                                    "locationName": "Langley",
+                                    "crs": "LNY",
+                                    "st": "18:26",
+                                    "at": "On time"
+                                },
+                                {
+                                    "locationName": "West Drayton",
+                                    "crs": "WDT",
+                                    "st": "18:31",
+                                    "at": "On time"
+                                },
+                                {
+                                    "locationName": "Hayes & Harlington",
+                                    "crs": "HAY",
+                                    "st": "18:38",
+                                    "at": "18:41"
+                                },
+                                {
+                                    "locationName": "Southall",
+                                    "crs": "STL",
+                                    "st": "18:42",
+                                    "at": "18:44"
+                                },
+                                {
+                                    "locationName": "Ealing Broadway",
+                                    "crs": "EAL",
+                                    "st": "18:49",
+                                    "et": "18:53"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "std": "19:00",
+                    "etd": "On time",
+                    "platform": "8",
+                    "operator": "Great Western Railway",
+                    "operatorCode": "GW",
+                    "serviceType": "train",
+                    "serviceID": "Rcg3dIJ7wSiR11avkbjmDA==",
+                    "rsid": "GW411900",
+                    "origin": {
+                        "location": [
+                            {
+                                "locationName": "London Paddington",
+                                "crs": "PAD"
+                            }
+                        ]
+                    },
+                    "destination": {
+                        "location": [
+                            {
+                                "locationName": "Bristol Temple Meads",
+                                "crs": "BRI"
+                            }
+                        ]
+                    },
+                    "subsequentCallingPoints": {
+                        "callingPointList": {
+                            "callingPoint": [
+                                {
+                                    "locationName": "Reading",
+                                    "crs": "RDG",
+                                    "st": "19:25",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Didcot Parkway",
+                                    "crs": "DID",
+                                    "st": "19:40",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Swindon",
+                                    "crs": "SWI",
+                                    "st": "19:58",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Chippenham",
+                                    "crs": "CPM",
+                                    "st": "20:13",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Bath Spa",
+                                    "crs": "BTH",
+                                    "st": "20:29",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Bristol Temple Meads",
+                                    "crs": "BRI",
+                                    "st": "20:43",
+                                    "et": "On time"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "std": "19:03",
+                    "etd": "On time",
+                    "operator": "TFL Rail",
+                    "operatorCode": "XR",
+                    "serviceType": "train",
+                    "serviceID": "kSYyCXc//jNCq3rQHLorJQ==",
+                    "rsid": "XR200200",
+                    "origin": {
+                        "location": [
+                            {
+                                "locationName": "London Paddington",
+                                "crs": "PAD"
+                            }
+                        ]
+                    },
+                    "destination": {
+                        "location": [
+                            {
+                                "locationName": "Heathrow Airport T4",
+                                "crs": "HAF"
+                            }
+                        ]
+                    },
+                    "subsequentCallingPoints": {
+                        "callingPointList": {
+                            "callingPoint": [
+                                {
+                                    "locationName": "Ealing Broadway",
+                                    "crs": "EAL",
+                                    "st": "19:12",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "West Ealing",
+                                    "crs": "WEA",
+                                    "st": "19:15",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Hanwell",
+                                    "crs": "HAN",
+                                    "st": "19:17",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Southall",
+                                    "crs": "STL",
+                                    "st": "19:20",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Hayes & Harlington",
+                                    "crs": "HAY",
+                                    "st": "19:24",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Heathrow Airport T123",
+                                    "crs": "HXX",
+                                    "st": "19:31",
+                                    "et": "On time"
+                                },
+                                {
+                                    "locationName": "Heathrow Airport T4",
+                                    "crs": "HAF",
+                                    "st": "19:37",
+                                    "et": "On time"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

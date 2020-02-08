@@ -1,0 +1,46 @@
+@import './Variables.scss';
+
+body {
+    font-family: "Futura PT", "Open Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    font-size: 16px;
+    color: $color_white;
+
+    background: $color_background;
+}
+    
+i.material-icons {
+    display: inline-block;
+    height: auto; width: auto;
+    font-size: 24px;
+
+    &:before { display: none; }
+}
+    
+a {
+    text-decoration: none;
+    border: none;
+    color: $color_link_inactive;
+
+    transition: $ttime_link;
+
+    &:hover { color: $color_link_hover; }
+    &:active { color: $color_link_active; }
+}
+
+.App {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    height: 100vh;
+}
+
+.page {
+    flex: 1;
+    width: 100%;
+}

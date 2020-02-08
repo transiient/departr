@@ -1,0 +1,86 @@
+@import '../Variables.scss';
+
+.result {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    margin: 0 16px 24px 16px;
+
+    border-radius: 12px;
+    background-color: $color_background_lighter;
+
+    overflow: hidden;
+
+    transition: $ttime_link;
+    &:hover {
+        box-shadow: $box_shadow_medium;
+    }
+}
+
+.station {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    padding: 16px;
+
+    .badge {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin: 0 16px 0 8px;
+        border-radius: 8px;
+
+        background-color: $color_white;
+
+        color: $color_black;
+        .mode {
+            // Mode icon (padding adjusted for top margin)
+            padding: 9px 8px 7px 8px;
+        }
+        .crs {
+            // CRS code
+            padding: 8px 12px 8px 0;
+
+            font-weight: 600;
+        }
+    }
+
+    .name {
+        // Station Name
+        flex: 1;
+    }
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    height: 100%;
+
+    padding: 16px 12px 16px 0;
+
+    .button {
+        padding: 0 12px 0 12px;
+
+        text-align: center;
+        i {
+            // Icon
+            display: block;
+        }
+        .buttonLabel {
+            // Label
+            position: relative;
+
+            font-size: 12px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+    }
+}

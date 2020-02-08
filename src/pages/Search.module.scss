@@ -1,0 +1,47 @@
+@import '../Variables.scss';
+
+.pageContainer {}
+
+.successContainer {
+    display: grid;
+
+    grid-template-areas:
+        "heading"
+        "search"
+        "button"
+        "results"
+}
+
+.heading {
+    grid-area: heading;
+    padding: 64px 16px;
+
+    text-align: center;
+    font-size: 4em;
+    font-weight: 200;
+    color: $color_pink;
+
+    .query {
+        font-weight: 400;
+        color: $color_white;
+    }
+}
+
+.searchBar {
+    margin: 0 auto;
+
+    padding: 16px;
+
+    button {
+        background-color: $color_white;
+    }
+}
+
+.resultsList {
+    grid-area: results;
+
+    margin: 0 auto;
+
+    width: 100%;
+    max-width: 80ch;
+}
