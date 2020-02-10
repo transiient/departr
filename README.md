@@ -5,7 +5,7 @@ I was sick of trying to find a page with *just train times*, so I made Departr.
 ## Build and Run
 
 1. Register for an OpenLDBWS token [here](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration/)
-2. Copy `/example.env` to `/api/.env` and insert the following:
+2. Copy `/example.env` to `/.env` and insert the following:
     * The token you just received
     * The latest URL of the OpenLDBWS API (available [here](https://lite.realtime.nationalrail.co.uk/openldbws/))
 3. Run `yarn` to install dependencies

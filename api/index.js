@@ -1,14 +1,15 @@
+require('dotenv').config();
 const uniq = require('lodash/uniq');
 const express = require('express')
 const app = express();
 const soap = require('soap');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-require('dotenv').config();
 
 if (!process.env.API_TOKEN_TRAIN||!process.env.API_URL_TRAIN) {
-    console.log("Please copy /example.env to /api/.env and insert required environment variables.");
-    process.exit();
+    console.log("Please copy /example.env to /.env and insert required environment variables.");
+    console.log("   Server might fail to connect if these variables remain unset");
+    console.log("   If /.env already exists, try copying it to /api/.env");
 }
 const API_URL_TRAIN      = process.env.API_URL_TRAIN;
 const API_TOKEN_TRAIN    = process.env.API_TOKEN_TRAIN;
