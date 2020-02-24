@@ -16,7 +16,6 @@ class SearchBar extends React.Component {
     }
 
     handleChange(e) {
-        console.log("handleChange " + e.target.value);
         this.setState({
             searchQuery: e.target.value,
             shouldSearch: false
@@ -51,7 +50,7 @@ class SearchBar extends React.Component {
                         value={ this.state.searchQuery } />
                     <button type="submit">
                         { this.props.text && ("Search") }
-                        { !this.props.text && (<i className="material-icons">search</i>)}
+                        { !this.props.text && (<i className={"hide-material-icons material-icons " + cn.buttonIcon}>search</i>)}
                     </button>
                 </form>
             </div>

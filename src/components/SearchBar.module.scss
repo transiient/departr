@@ -1,43 +1,56 @@
 @import '../Variables.scss';
 
 .searchBar {
-    input[type="text"] {
-        box-sizing: border-box;
+    border: 1px solid $color_grey_medium;
+    border-radius: 8px;
+    overflow: hidden;
+
+    background-color: $color_grey_light;
+
+    transition: $ttime_link;
+
+    // todo: make input:active enable box-shadow too!
+    &:hover {
+        box-shadow: $box_shadow_gentle;
+    }
+
+    // Reset default styles
+    input, button {
         border: 0;
-        border-radius: 12px;
-        padding: 8px 16px;
-        margin: 0 8px 0 0;
+        padding: 0;
+        margin: 0;
+    }
 
-        background-color: $color_grey_light;
+    input[type="text"] {
+        display: inline-block;
+        vertical-align: top;
 
-        font-size: 16px;
+        padding: 8px;
 
         transition: $ttime_link;
 
-        &:hover { box-shadow: $box_shadow_gentle; }
-        &:focus { box-shadow: $box_shadow_medium; }
+        &:hover { background-color: #ececec; }
+        &:focus { background-color: #ececec; }
     }
 
-    button {
-        box-sizing: border-box;
-        border: 0;
-        border-radius: 12px;
-        // todo: fix button being 2px below
-        padding: 10px 16px;
-        margin: 0;
+    button[type="submit"] {
+        display: inline-block;
+        vertical-align: top;
 
-        font-size: 12px;
-        text-transform: uppercase;
+        // 8px 16px + material-icons offset
+        padding: 10px 16px 6px 16px;
+        font-size: 16px;
 
-        background-color: rgba(0,0,0,0);
-
+        background-color: $color_grey_light;
+        border-left: 1px solid $color_grey_medium;
         transition: $ttime_link;
 
         &:hover {
-            background-color: $color_grey_light;
+            background-color: $color_pink;
+            border-left: 1px solid $color_pink;
         }
         &:active {
-            box-shadow: $box_shadow_gentle;
+            background-color: darken($color_pink, 8%);
         }
     }
 }
