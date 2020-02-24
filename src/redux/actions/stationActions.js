@@ -3,8 +3,7 @@ import {
     UPDATE_STATION_DETAILS_FAILED,
     UPDATE_STATION_DETAILS_SUCCEEDED
 } from '../types';
-
-const API_URL = '192.168.1.241:3001';
+import { API_URL } from '../../config';
 
 // actual actions
 const updateStationDetailsStarted = () => {
@@ -31,7 +30,7 @@ export const updateStationDetails = (queryCrs) => {
         dispatch(updateStationDetailsStarted());
 
         // todo: use axios instead
-        fetch('http://'+API_URL+'/station-detail/train/' + queryCrs)
+        fetch(API_URL+'/station-detail/train/' + queryCrs)
         .then((res) => {
             res.json().then((json) => {
             dispatch(updateStationDetailsSucceeded(json));

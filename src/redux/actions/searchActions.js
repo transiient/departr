@@ -3,8 +3,7 @@ import {
     SEARCH_STATION_SUCCEEDED,
     SEARCH_STATION_FAILED
 } from '../types';
-
-const API_URL = '192.168.1.241:3001';
+import { API_URL } from '../../config';
 
 const searchStarted = () => {
     return {
@@ -32,7 +31,7 @@ export const searchStations = (query) => {
         dispatch(searchStarted());
 
         // todo: use axios instead
-        fetch('http://'+API_URL+'/station-search/train/' + query)
+        fetch(API_URL+'/station-search/train/' + query)
         .then((res) => {
             res.json().then((json) => {
             dispatch(searchSucceeded({query, results: json}));
