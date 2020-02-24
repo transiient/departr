@@ -29,8 +29,6 @@ class Search extends React.Component {
 
         let { isLoading, query, results, error } = this.props;
 
-        console.log(this.props.results);
-
         return (
             <div className={"page " + cn.pageContainer}>
                 <Helmet>
