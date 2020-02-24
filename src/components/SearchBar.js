@@ -8,7 +8,8 @@ class SearchBar extends React.Component {
         super(props);
 
         this.state = {
-            searchQuery: this.props.initialSearchQuery||''
+            searchQuery: this.props.initialSearchQuery||'',
+            shouldSearch: false
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -28,13 +29,21 @@ class SearchBar extends React.Component {
         if (this.state.searchQuery.length < 3)
             return;
         
-        this.setState({ shouldSearch: true });
+        this.setState({
+            shouldSearch: true
+        });
     }
 
     render() {
         const placeholder = this.props.placeholder || '';
 
         if (this.state.shouldSearch === true) {
+            // todo: this is causing error in render method
+            //! fix asap
+            //? how can shouldSearch be reset?
+            /*
+                Warning: Cannot update during an existing state transition
+            */
             this.setState({ shouldSearch: false });
             return (<Redirect to={ '/search/' + this.state.searchQuery }/>);
         }
