@@ -28,7 +28,7 @@ class Header extends React.Component {
                     </ul>
                 </div>
 
-                <SearchBar handleSearch={ this.props.handleSearch } className={cn.searchBarHeader} text />
+                <SearchBar handleSearch={ this.props.handleSearch } className={cn.searchBarHeader}  />
             </div>
         );
     }
