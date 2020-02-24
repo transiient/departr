@@ -29,6 +29,8 @@ class Search extends React.Component {
 
         let { isLoading, query, results, error } = this.props;
 
+        console.log(this.props.results);
+
         return (
             <div className={"page " + cn.pageContainer}>
                 <Helmet>
@@ -51,7 +53,7 @@ class Search extends React.Component {
                 { !isLoading && query && results.length === 0 &&
                     <div className={cn.noResultsContainer}>No results</div>}
 
-                { !isLoading && query && results.length > 1 &&
+                { !isLoading && query && results.length > 0 &&
                     <div className={cn.successContainer}>
                         <p className={cn.heading}>Search results for <span className={cn.query}>{ query }</span></p>
                         <SearchBar className={cn.searchBar} initialSearchQuery={ query } text />
