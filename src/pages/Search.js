@@ -20,7 +20,6 @@ class Search extends React.Component {
     }
 
     _runSearch(query) {
-        console.log("_runSearch " + query);
         this.props.searchStations(query);
     }
 
