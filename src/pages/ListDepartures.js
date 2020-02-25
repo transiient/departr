@@ -59,7 +59,7 @@ class ListDepartures extends React.Component {
             services
         } = station || {};
 
-        const pageTitle = (stationName + " Departures | departr");
+        const pageTitle = (stationName + " departures | departr");
 
         console.dir(this.props);
 
