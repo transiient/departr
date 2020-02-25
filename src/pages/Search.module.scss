@@ -27,14 +27,36 @@
     }
 }
 
-.searchBar {
-    margin: 0 auto;
+.searchBarContainer {
+    width: 100%;
+    max-width: 80ch;
+    margin: 0 auto 64px auto;
+    padding: 0 16px;
+}
+.searchBarSP {
+    width: 100%;
+    max-width: 80ch;
+    border: 0;
+    border-radius: 12px;
 
-    padding: 16px;
+    background-color: $color_white;
 
-    button {
-        background-color: $color_white;
+    input[type="text"] {
+        padding: 24px 16px;
     }
+
+    button[type="submit"] {
+        height: 66px; // todo: very hacky way of making the button fit the container. fix this!
+        padding: 24px 16px;
+        margin: 0;
+        border: 0;
+    }
+}
+
+.filters {
+    margin: 16px auto;
+    color: $color_pink;
+    border-bottom: 2px solid $color_pink;
 }
 
 .resultsList {

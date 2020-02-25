@@ -9,6 +9,15 @@ import SearchBar from '../components/SearchBar';
 
 import cn from './Search.module.scss';
 
+function Filters() {
+    return (
+        <div className={cn.filters}>
+            Train
+        </div>
+    )
+}
+
+
 class Search extends React.Component {
     componentDidMount() {
         if (this.props.match.params.query)
@@ -38,7 +47,7 @@ class Search extends React.Component {
                     <span>Loading results...</span> }
 
                 { !isLoading && !query &&
-                    <div className="noin">
+                    <div className={cn.errorContainer}>
                         No search input
                     </div> }
 
@@ -53,7 +62,10 @@ class Search extends React.Component {
                 { !isLoading && query && results.length > 0 &&
                     <div className={cn.successContainer}>
                         <p className={cn.heading}>Search results for <span className={cn.query}>{ query }</span></p>
-                        <SearchBar className={cn.searchBar} initialSearchQuery={ query } text />
+                        <div className={cn.searchBarContainer}>
+                            <SearchBar className={cn.searchBarSP} initialSearchQuery={ query } text />
+                        </div>
+                        {/*<Filters items={ results || [] } />*/ /* todo: implement properly */}
                         <SearchResultsList className={cn.resultsList} items={ results || [] } />
                     </div>
                 }
