@@ -1,6 +1,6 @@
 # Departr - Train Tracker
 
-I was sick of trying to find a page with *just train times*, so I made Departr.
+I was sick of trying to find a page with *just train times*, so I made Departr. Now I'm working to add features without detracting from the simplicity of this original goal.
 
 ## Build and Run
 
@@ -24,6 +24,14 @@ I was sick of trying to find a page with *just train times*, so I made Departr.
 * PWA with departure notifications (bell button beside entries on departure list)
 * *?* Accounts with the option to save regularly-timetabled journies
     * Email notifications with travel updates
+
+### Future Goals
+
+* Integrate a plan for monetisation
+* Combine realtime expected times with timetabled times for future results
+    * Enable tracking of specific services with notifications on PWA
+* Integrate bus, cycle, and coach tracking services
+    * Link these with trains for connecting services
 
 ## Licence
 
