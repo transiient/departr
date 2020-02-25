@@ -57,8 +57,8 @@ class SearchBar extends React.Component {
                         onChange={ this.handleChange }
                         placeholder={ placeholder }
                         value={ this.state.searchQuery } />
-                    <button type="submit">
-                        { this.props.text && ("Search") }
+                    <button type="submit" className={ this.props.text ? cn.text : '' }>
+                        { this.props.text && "Search" }
                         { !this.props.text && (<i className={"hide-material-icons material-icons " + cn.buttonIcon}>search</i>)}
                     </button>
                 </form>
