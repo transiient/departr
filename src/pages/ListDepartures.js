@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 
-import TimesDisplay from '../components/TimesDisplay';
+import Times from '../components/Times';
 
 import { updateStationDetails } from '../redux/actions/stationActions';
 
@@ -32,13 +32,6 @@ class ListDepartures extends React.Component {
         return false;
     }
 
-    _getExpectedTime(callingPoint) {
-        if (callingPoint.et === "On time")
-            return (<span className="">{ callingPoint.st }</span>);
-        else
-            return (<span className="special">{ callingPoint.et }</span>);
-    }
-
     render() {
         if (!this._shouldComponentRender(this.props.isLoading)) return <div>Loading</div>
 
@@ -53,15 +46,9 @@ class ListDepartures extends React.Component {
             error,
             station
         } = this.props;
-        const {
-            stationCrs,
-            stationName,
-            services
-        } = station || {};
+        console.log(this.props);
 
-        const pageTitle = (stationName + " departures | departr");
-
-        console.dir(this.props);
+        const pageTitle = (station.station.name + " departures | departr");
 
         return (
             <div className={"page " + cn.pageContainer}>
@@ -80,37 +67,22 @@ class ListDepartures extends React.Component {
                 </div> }
 
                 { !isLoading &&
-                <div className="departuresLabel">
-                    <span className="label">Showing departures from </span>
-                    <span className="location">
-                        { stationName } ({ stationCrs })
-                    </span>
-                    <a className="mapsLink"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href={ "https://www.google.com/maps/search/" + stationName + " station" }>
-                        <span><i className="material-icons">map</i></span>
-                    </a>
-                </div> }
-                { /* todo: only show when near cities
-                    show a short list of nearby bike stops with a link to see more?
-                <Link className="bikesLink"
-                    target="_blank" rel="noopener noreferrer"
-                    to={ "/bike/search/" + stationName }>
-                    <span>More bikes near here</span>
-                </Link>*/ }
+                <div className={cn.wrapper}>
+                    <div className={cn.title}>
+                        Departures from <span className={cn.pink}>{ station.station.name }</span>
+                    </div>
 
-                <TimesDisplay
-                    stationCrs={ stationCrs }
-                    stationName={ stationName }
-                    services={ services }
-                />
+                    <Times
+                        services={ station.services }
+                    />
+                </div> }
             </div>
         );
     }
 }
 
 const mapStateToProps = (store) => {
+    console.dir(store.station);
     return {
         isLoading: store.station.isLoading,
         error: store.station.error,

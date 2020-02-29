@@ -1,104 +1,139 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PT from 'prop-types';
+import classnames from 'classnames';
+
+import cn from './Service.module.scss';
+
+function TimesPanel(props) {
+    const {
+        service
+    } = props;
+
+    if (service.time.onTime) { // On time
+        return (
+            <div className={cn.timesPanel}>
+                <div className={cn.timeLabel}>On time</div>
+                <div className={cn.time}>{service.time.expected}</div>
+            </div>
+        )
+    }
+    else if (service.cancelled) { // Cancelled
+        return (
+            <div className={cn.timesPanel + ' ' + cn.timesPanelCancelled}>
+                <div className={cn.timeLabel}>Cancelled</div>
+                <div className={cn.time}>{service.time.scheduled}</div>
+            </div>
+        )
+    }
+    else { // Delayed
+        return (
+            <div className={cn.timesPanel + ' ' + cn.timesPanelDelayed}>
+                <div className={cn.time + ' ' + cn.timeDelayScheduled}>{service.time.scheduled}</div>
+                <div className={cn.timeLabel}>expected</div>
+                <div className={cn.time + ' ' + cn.timeDelayExpected}>{service.time.expected}</div>
+            </div>
+        )
+    }
+}
+
+function BuyTickets(props) {
+    return (
+        <div className={cn.button + ' ' + cn.buttonBuyTickets}>
+            <a href="https://google.com/">Buy Tickets</a>
+        </div>
+    )
+}
+
+function CallingPoint(props) {
+    const point = props.data;
+
+    return (
+        <li className={cn.callingPointWrapper}>
+            <span className={cn.callingPointTime}>{point.time.expected}</span>
+            <span className={cn.callingPointLabel}>&nbsp;-&nbsp;</span>
+            <span className={cn.callingPointStation}>
+                <Link to={"/" + point.station.crs}>{point.station.name}</Link>
+            </span>
+        </li>
+    )
+}
 
 class Service extends React.Component {
-    _getActualTime(scheduled, expected) {
-        if (scheduled === "Cancelled") {
-            return "Cancelled"
-        }
-        else if (scheduled === "Delayed") {
-            return expected
-        }
-        else {
-            return scheduled
-        }
-    }
-
-    _deconstructService(service) {
-        let nService = {
-            serviceID: service.serviceID,
-            operator: service.operator,
-            origin: {
-                stationName: service.origin.location[0].locationName,
-                crs: service.origin.location[0].crs
-            },
-            destination: {
-                stationName: service.destination.location[0].locationName,
-                crs: service.destination.location[0].crs
-            },
-            time: {
-                cancelled: service.etd==="Cancelled",
-                scheduled: service.std,
-                expected: service.etd,
-                actual: this._getActualTime(service.std, service.etd)
-            },
-            direct: true,
-            callingPoints: [] // Added below
-        }
-
-        let callingPoints = service.subsequentCallingPoints.callingPointList.callingPoint;
-        if (Array.isArray(callingPoints)) {
-            nService.direct = false;
-
-            for (let i = 0; i < callingPoints.length; i++) {
-                let point = callingPoints[i];
-
-                nService.callingPoints.push({
-                    stationName: point.locationName,
-                    crs: point.crs,
-                    time: {
-                        cancelled: point.et==="Cancelled",
-                        scheduled: point.st,
-                        expected: point.et,
-                        actual: this._getActualTime(point.st, point.et)
-                    }
-                });
-            }
-        }
-
-        return(nService);
-    }
-
     render() {
-        let index = this.props.index;
-        let service = this._deconstructService(this.props.service);
+        let {
+            service
+        } = this.props;
 
         return (
-            <li key={ index } className="service">
-                <div className="serviceInfo">
-                    <div className="info">
-                        { service.time.actual }
-                        <span className="label"> to </span>
-                        <span className="location">{ service.destination.stationName }</span>
-                    </div>
-                    <div className="origin">
-                        <span className="label">Operated by { service.operator }, this train originally departed from </span>
-                        <span className="location">{ service.origin.stationName }</span>
-                    </div>
-                </div>
+            <li className={cn.wrapper + ' ' + (this.props.service.cancelled ? cn.cancelled : '')}>
+                <div className={cn.backgroundTextHuge}>{service.stationDestination.name}</div>
 
-                <div className="callingPoints">
-                    { service.direct && // If service is direct
-                        <span className="direct">Direct</span>
-                    }
-                    { !service.direct && // If service has additional stops
-                    <ol className="callingPointList">
-                        {
-                            service.callingPoints.map((point, index) =>
-                                <li key={ index } className="point">
-                                    <Link to={ ('/' + point.crs) }>
-                                        <span className="location">{ point.stationName }</span>
-                                    </Link>
-                                    <span className="label"> at </span>
-                                    <span className="departureTime">{ point.time.actual }</span>
-                                </li>
-                            )
-                        }
-                    </ol>}
+                <div className={cn.gridContainer}>
+                    <TimesPanel service={service} className={cn.gridTopLeft} />
+                    { !service.cancelled && <BuyTickets service={service} className={cn.gridBottomLeft} /> }
+
+                    <div className={classnames(cn.fromTo, cn.gridTopMiddle)}>
+                        <span className={cn.labelTiny}>From&nbsp;</span>
+                        <Link to={service.stationOrigin.crs}>{service.stationOrigin.name}</Link>
+                        <span className={cn.labelTiny}>&nbsp;to&nbsp;</span>
+                        <Link to={service.stationDestination.crs}>{service.stationDestination.name}</Link>
+                    </div>
+
+                    <div className={classnames(cn.operatorPanel, cn.gridTopRight)}>
+                        <span><i className="material-icons">train</i></span>
+                        <span className={cn.operatorLabel}>Operated by</span>
+                        <span className={cn.operatorName}>{service.operator.name}</span>
+                    </div>
+
+                    <ol className={classnames(cn.callingPoints, cn.gridBottomMiddle)}>
+                        {service.callingPoints.map((point, index) => {
+                            return ( <CallingPoint key={index} data={point} /> )
+                        })}
+                    </ol>
                 </div>
             </li>
         );
     }
+}
+
+//todo: PLEASE, for the love of god, REFACTOR THIS SOMEHOW
+Service.propTypes = {
+    service: PT.exact({
+        serviceType: PT.string.isRequired,
+        serviceID: PT.string.isRequired,
+        rsid: PT.string.isRequired,
+        operator: PT.exact({
+            name: PT.string.isRequired,
+            code: PT.string.isRequired
+        }).isRequired,
+        stationOrigin: PT.exact({
+            name: PT.string.isRequired,
+            crs: PT.string.isRequired
+        }).isRequired,
+        stationDestination: PT.exact({
+            name: PT.string.isRequired,
+            crs: PT.string.isRequired
+        }).isRequired,
+        cancelled: PT.bool.isRequired,
+        time: PT.exact({
+            scheduled: PT.string.isRequired,
+            expected: PT.string.isRequired,
+            onTime: PT.bool.isRequired
+        }).isRequired,
+        callingPoints: PT.arrayOf(PT.exact({
+            station: PT.exact({
+                name: PT.string.isRequired,
+                crs: PT.string.isRequired
+            }).isRequired,
+            time: PT.exact({
+                scheduled: PT.string.isRequired,
+                expected: PT.string.isRequired,
+                onTime: PT.bool.isRequired
+            }).isRequired
+        }).isRequired).isRequired,
+        direct: PT.bool.isRequired
+    })
 }
 
 export default Service;

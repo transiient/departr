@@ -1,23 +1,14 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
 import Service from './Service';
 
+// todo: move into Service.js as List component
 class Times extends React.Component {
-    componentDidMount() {
-
-    }
-
     render() {
-        // note + todo: service.std is scheduled
-        // if .etd is "On time" display std
-        // otherwise, if it's "Delayed", change
-        // colour of departureTime
-
         let services = this.props.services || [];
 
         return (
-            <div className="timesDisplay">
+            <div className="times">
                 <ol>
                     { services.map((service, index) => (
                         <Service key={ index } index={ index } service={ service } />
@@ -28,12 +19,4 @@ class Times extends React.Component {
     } // render()
 }
 
-const mapStateToProps = (store) => {
-    return {
-        station: store.station
-    }
-}
-
-export default connect(
-    mapStateToProps
-)(Times);
+export default Times;
