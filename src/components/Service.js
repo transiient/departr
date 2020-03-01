@@ -13,7 +13,7 @@ function TimesPanel(props) {
     if (service.time.onTime) { // On time
         return (
             <div className={cn.timesPanel}>
-                <div className={cn.timeLabel}>On time</div>
+                <div className={classnames("labelUppercaseSmall", cn.timeLabel)}>On time</div>
                 <div className={cn.time}>{service.time.expected}</div>
             </div>
         )
@@ -21,7 +21,7 @@ function TimesPanel(props) {
     else if (service.cancelled) { // Cancelled
         return (
             <div className={cn.timesPanel + ' ' + cn.timesPanelCancelled}>
-                <div className={cn.timeLabel}>Cancelled</div>
+                <div className={classnames("labelUppercaseSmall", cn.timeLabel)}>Cancelled</div>
                 <div className={cn.time}>{service.time.scheduled}</div>
             </div>
         )
@@ -30,7 +30,7 @@ function TimesPanel(props) {
         return (
             <div className={cn.timesPanel + ' ' + cn.timesPanelDelayed}>
                 <div className={cn.time + ' ' + cn.timeDelayScheduled}>{service.time.scheduled}</div>
-                <div className={cn.timeLabel}>expected</div>
+                <div className={classnames("labelUppercaseSmall", cn.timeLabel)}>expected</div>
                 <div className={cn.time + ' ' + cn.timeDelayExpected}>{service.time.expected}</div>
             </div>
         )
@@ -69,21 +69,23 @@ class Service extends React.Component {
             <li className={cn.wrapper + ' ' + (this.props.service.cancelled ? cn.cancelled : '')}>
                 <div className={cn.backgroundTextHuge}>{service.stationDestination.name}</div>
 
-                <div className={cn.gridContainer}>
+                <div className={cn.container}>
                     <TimesPanel service={service} className={cn.gridTopLeft} />
-                    { !service.cancelled && <BuyTickets service={service} className={cn.gridBottomLeft} /> }
 
                     <div className={classnames(cn.fromTo, cn.gridTopMiddle)}>
-                        <span className={cn.labelTiny}>From&nbsp;</span>
+                        <span className={classnames("labelUppercaseSmall", cn.labelTiny)}>From&nbsp;</span>
                         <Link to={service.stationOrigin.crs}>{service.stationOrigin.name}</Link>
-                        <span className={cn.labelTiny}>&nbsp;to&nbsp;</span>
+                        <span className={classnames("labelUppercaseSmall", cn.labelTiny)}>&nbsp;to&nbsp;</span>
                         <Link to={service.stationDestination.crs}>{service.stationDestination.name}</Link>
                     </div>
 
                     <div className={classnames(cn.operatorPanel, cn.gridTopRight)}>
-                        <span><i className="material-icons">train</i></span>
-                        <span className={cn.operatorLabel}>Operated by</span>
-                        <span className={cn.operatorName}>{service.operator.name}</span>
+                        <a href={service.operator.homepageUrl} target="_blank" rel="noreferrer noopener">
+                            <span><i className="material-icons">train</i></span>
+                            <span className={classnames("labelUppercaseSmall", cn.operatorLabel)}>Operated by</span>
+                            <span className={cn.operatorCode}>{service.operator.code}</span>
+                            <span className={cn.operatorName}>{service.operator.name}</span>
+                        </a>
                     </div>
 
                     <ol className={classnames(cn.callingPoints, cn.gridBottomMiddle)}>
@@ -91,6 +93,8 @@ class Service extends React.Component {
                             return ( <CallingPoint key={index} data={point} /> )
                         })}
                     </ol>
+
+                    { !service.cancelled && <BuyTickets service={service} className={cn.gridBottomLeft} /> }
                 </div>
             </li>
         );
@@ -104,7 +108,8 @@ export let PTService = PT.exact({
     rsid: PT.string.isRequired,
     operator: PT.exact({
         name: PT.string.isRequired,
-        code: PT.string.isRequired
+        code: PT.string.isRequired,
+        homepageUrl: PT.string.isRequired
     }).isRequired,
     stationOrigin: PT.exact({
         name: PT.string.isRequired,

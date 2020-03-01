@@ -16,6 +16,7 @@ const API_TOKEN_TRAIN    = process.env.API_TOKEN_TRAIN;
 const EXPRESS_PORT = 3001;
 
 const StationCodes = require('../src/data/station_codes.json');
+const TrainOperatingCompanies = require('../src/data/train_operating_companies.json');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -90,6 +91,10 @@ function getExpectedTime(scheduled, expected) {
     else
         return expected;
 }
+function getOperatorHomepageUrl(operatorCode) {
+    return TrainOperatingCompanies.filter((operator) => operator.code === operatorCode) || '';
+}
+
 function formatCallingPoint(callingPoint) {
     let out = {
         station: {
@@ -105,7 +110,7 @@ function formatCallingPoint(callingPoint) {
     }
 
     if (out.station.name === '' || out.station.crs === '')
-        console.error('formatCallingPoint() callingPoint ->', callingPoint);
+        console.error('formatCallingPoint() station.name or station.crs empty -- callingPoint ->', callingPoint);
 
     return out;
 }
@@ -131,7 +136,8 @@ function formatService(service) {
         rsid: service.rsid||'',
         operator: {
             name: service.operator,
-            code: service.operatorCode
+            code: service.operatorCode,
+            homepageUrl: getOperatorHomepageUrl(service.operatorCode)
         },
         stationOrigin: {
             name: service.origin.location[0].locationName,
