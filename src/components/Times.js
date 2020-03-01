@@ -1,5 +1,6 @@
 import React from 'react';
 import PT from 'prop-types';
+import classnames from 'classnames';
 
 import Service from './Service';
 import { PTService } from './Service';
@@ -10,7 +11,7 @@ class Times extends React.Component {
         let services = this.props.services || [];
 
         return (
-            <div className="times">
+            <div className={classnames("times", this.props.classNames)}>
                 <ol>
                     { services.map((service, index) => (
                         <Service key={ index } index={ index } service={ service } />

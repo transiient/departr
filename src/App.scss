@@ -17,8 +17,10 @@ i.material-icons {
 
     &:before { display: none; }
 }
-    
+
 a {
+    display: inline-block;
+
     text-decoration: none;
     border: none;
     color: $color_link_inactive;
@@ -27,6 +29,39 @@ a {
 
     &:hover { color: $color_link_hover; }
     &:active { color: $color_link_active; }
+}
+
+h1 {
+    font-size: 3.2em;
+}
+
+h2 {
+    font-size: 2em;
+}
+
+h3 {
+    font-size: 1.2em;
+}
+
+.textColorPink {
+    color: $color_pink;
+}
+.textWeightBold {
+    font-weight: bold;
+}
+
+.labelUppercaseSmall {
+    font-size: 10px;
+    text-transform: uppercase;
+    padding: 4px 0;
+}
+
+.textLarge {
+    font-size: 1.4em;
+}
+
+.typefaceMono {
+    font-family: "Source Code Pro", "Consolas", monospace;
 }
 
 .App {

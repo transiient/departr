@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
+import classnames from 'classnames';
 
 import Times from '../components/Times';
 
@@ -66,9 +67,9 @@ class ListDepartures extends React.Component {
                     <Helmet>
                         <title>{ details.station.name + " departures | departr" }</title>
                     </Helmet>
-                    <div className={cn.title}>
-                        Departures from <span className={cn.pink}>{ details.station.name }</span>
-                    </div>
+                    <h1 className={cn.title}>
+                        Departures from <span className={classnames("textColorPink", "textWeightBold")}>{ details.station.name }</span>
+                    </h1>
 
                     <Times
                         classNames={cn.times}

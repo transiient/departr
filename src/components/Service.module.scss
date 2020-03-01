@@ -1,0 +1,163 @@
+@import '../Variables.scss';
+
+.wrapper {
+    max-width: 80ch;
+
+    border-radius: 12px;
+    margin: 16px auto;
+    padding: 16px;
+    overflow: hidden;
+
+    background-color: #242424;
+
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.backgroundTextHuge {
+    display:none;//temp
+    // display: block;
+    position: absolute;
+    overflow: hidden;
+    z-index: 0;
+    top: -60px; right: 0; bottom: 0; left: 0;
+    font-size: 360px;
+
+    color: $color_pink;
+
+    opacity: 0.04;
+}
+.cancelled {
+    opacity: .5;
+    transition: $ttime_link;
+    &:hover { opacity: 1; }
+}
+
+.container {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: repeat(2, auto);
+    grid-template-areas:
+        "top-left       top-middle      top-right"
+        "bottom-left    bottom-middle   bottom-right";
+    grid-gap: 16px;
+    align-items: start;
+    justify-content: start;
+
+    width: 100%;
+
+    .gridTopLeft { grid-area: top-left; }
+    .gridTopMiddle { grid-area: top-middle; }
+    .gridTopRight { grid-area: top-right; }
+    .gridBottomLeft { grid-area: bottom-left; }
+    .gridBottomMiddle { grid-area: bottom-middle; }
+    .gridBottomRight { grid-area: bottom-right; }
+
+    @media only screen and (max-width: 680px) {
+        grid-template-areas:
+            "top-left       top-middle      top-right"
+            "bottom-left    bottom-middle   bottom-middle";
+    }
+
+    .timesPanel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        width: 100%;
+        height: 100%;
+
+        border-radius: 8px;
+        padding: 8px;
+
+        background-color: $color_white;
+
+        color: $color_black;
+
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .buttonJourneyMap a {
+        border-radius: 8px;
+        padding: 8px;
+
+        background-color: $color_pink;
+
+        color: $color_black;
+
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .fromTo {
+        align-self: center;
+
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        grid-template-areas:
+            "a c"
+            "b d";
+        grid-column-gap: 16px;
+        justify-content: center;
+        align-items: center;
+
+        width: 100%;
+        
+        * { text-align: center; }
+        a { font-size: 1.4em; }
+        .fromToTo { grid-area: a; }
+        .destination { grid-area: b; }
+        .fromToFrom { grid-area: c; }
+        .origin { grid-area: d; }
+
+        .destination {
+            color: $color_pink;
+        }
+    }
+
+    .operatorPanel a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 8ch;
+
+        text-align: center;
+
+        .operatorType i {
+            font-size: 24px;
+        }
+
+        .operatorName {
+            display: none;
+        }
+    }
+
+    .callingPoints {
+        width: 100%;
+
+        padding: 8px;
+
+        border-radius: 4px;
+
+        background-color: #2f2f2f;
+
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+
+        .callingPointWrapper {
+            // todo: make each <li /> child aligned down the list
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+
+            border-bottom: 1px solid #242424;
+            padding: 8px 0;
+            margin: 0 8px;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .callingPointTime {
+                margin-right: 16px;
+            }
+        }
+    }
+}

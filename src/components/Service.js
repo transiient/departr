@@ -14,7 +14,7 @@ function TimesPanel(props) {
         return (
             <div className={cn.timesPanel}>
                 <div className={classnames("labelUppercaseSmall", cn.timeLabel)}>On time</div>
-                <div className={cn.time}>{service.time.expected}</div>
+                <div className={classnames("textLarge", cn.time)}>{service.time.expected}</div>
             </div>
         )
     }
@@ -22,25 +22,25 @@ function TimesPanel(props) {
         return (
             <div className={cn.timesPanel + ' ' + cn.timesPanelCancelled}>
                 <div className={classnames("labelUppercaseSmall", cn.timeLabel)}>Cancelled</div>
-                <div className={cn.time}>{service.time.scheduled}</div>
+                <div className={classnames("textLarge", cn.time)}>{service.time.scheduled}</div>
             </div>
         )
     }
     else { // Delayed
         return (
             <div className={cn.timesPanel + ' ' + cn.timesPanelDelayed}>
-                <div className={cn.time + ' ' + cn.timeDelayScheduled}>{service.time.scheduled}</div>
+                <div className={classnames("textLarge", cn.time, cn.timeDelayScheduled)}>{service.time.scheduled}</div>
                 <div className={classnames("labelUppercaseSmall", cn.timeLabel)}>expected</div>
-                <div className={cn.time + ' ' + cn.timeDelayExpected}>{service.time.expected}</div>
+                <div className={classnames("textLarge", cn.time, cn.timeDelayExpected)}>{service.time.expected}</div>
             </div>
         )
     }
 }
 
-function BuyTickets(props) {
+function ButtonJourneyMap(props) {
     return (
-        <div className={cn.button + ' ' + cn.buttonBuyTickets}>
-            <a href="https://google.com/">Buy Tickets</a>
+        <div className={cn.button + ' ' + cn.buttonJourneyMap}>
+            <a href="https://google.com/">See Journey Map</a>
         </div>
     )
 }
@@ -50,8 +50,7 @@ function CallingPoint(props) {
 
     return (
         <li className={cn.callingPointWrapper}>
-            <span className={cn.callingPointTime}>{point.time.expected}</span>
-            <span className={cn.callingPointLabel}>&nbsp;-&nbsp;</span>
+            <span className={classnames("textLarge", cn.callingPointTime)}>{point.time.expected}</span>
             <span className={cn.callingPointStation}>
                 <Link to={"/" + point.station.crs}>{point.station.name}</Link>
             </span>
@@ -73,15 +72,15 @@ class Service extends React.Component {
                     <TimesPanel service={service} className={cn.gridTopLeft} />
 
                     <div className={classnames(cn.fromTo, cn.gridTopMiddle)}>
-                        <span className={classnames("labelUppercaseSmall", cn.labelTiny)}>From&nbsp;</span>
-                        <Link to={service.stationOrigin.crs}>{service.stationOrigin.name}</Link>
-                        <span className={classnames("labelUppercaseSmall", cn.labelTiny)}>&nbsp;to&nbsp;</span>
-                        <Link to={service.stationDestination.crs}>{service.stationDestination.name}</Link>
+                        <span className={classnames("labelUppercaseSmall", cn.labelTiny, cn.fromToTo)}>To</span>
+                        <Link className={classnames(cn.destination)} to={service.stationDestination.crs}>{service.stationDestination.name}</Link>
+                        <span className={classnames("labelUppercaseSmall", cn.labelTiny, cn.fromToFrom)}>from</span>
+                        <Link className={classnames(cn.origin)} to={service.stationOrigin.crs}>{service.stationOrigin.name}</Link>
                     </div>
 
                     <div className={classnames(cn.operatorPanel, cn.gridTopRight)}>
                         <a href={service.operator.homepageUrl} target="_blank" rel="noreferrer noopener">
-                            <span><i className="material-icons">train</i></span>
+                            <span className={cn.operatorType}><i className="material-icons">train</i></span>
                             <span className={classnames("labelUppercaseSmall", cn.operatorLabel)}>Operated by</span>
                             <span className={cn.operatorCode}>{service.operator.code}</span>
                             <span className={cn.operatorName}>{service.operator.name}</span>
@@ -94,7 +93,7 @@ class Service extends React.Component {
                         })}
                     </ol>
 
-                    { !service.cancelled && <BuyTickets service={service} className={cn.gridBottomLeft} /> }
+                    { !service.cancelled && <ButtonJourneyMap service={service} className={cn.gridBottomLeft} /> }
                 </div>
             </li>
         );
