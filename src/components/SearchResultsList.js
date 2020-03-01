@@ -17,8 +17,8 @@ class SearchResultsList extends React.Component {
         this._checkNoResults(items);
 
         return (
-            <ol className={ "listbox " + this.props.className||'' }>{ items.map((it) => (
-                <SearchResult key={ it['CRS Code'] } detail={ it } />
+            <ol className={ "listbox " + this.props.className||'' }>{ items.map((result) => (
+                <SearchResult key={ result.crs } detail={ result } />
             )) /* results.map() */}</ol>
         );
     }

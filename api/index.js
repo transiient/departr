@@ -23,10 +23,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 function searchTrainStations(query, _data, _err) {
-    const data = StationCodes;
+    const data = StationCodes.map((station) => ({
+        name: station["Station Name"],
+        crs: station["CRS Code"]
+    }));
     let _rv = [];
-    let _match = (data.filter((it) => (it["CRS Code"]).toLowerCase() === query.toLowerCase()));
-    let _additions = (data.filter((it) => ((it["CRS Code"]+it["Station Name"]).toLowerCase().includes(query.toLowerCase()))));
+    let _match = (data.filter((station) => (station.crs).toLowerCase() === query.toLowerCase()));
+    let _additions = (data.filter((station) => ((station.crs+station.name).toLowerCase().includes(query.toLowerCase()))));
 
     for (let i = 0; i < _additions.length; i++)
         _match.push(_additions[i]);
