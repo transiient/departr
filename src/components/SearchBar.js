@@ -34,13 +34,16 @@ class SearchBar extends React.Component {
         });
     }
 
-    render() {
-        const placeholder = this.props.placeholder || '';
-
+    componentDidUpdate() {
         if (this.state.shouldSearch === true) {
             this.setState({ shouldSearch: false });
             getHistory().push('/search/' + this.state.searchQuery);
         }
+    }
+
+    render() {
+        const placeholder = this.props.placeholder || '';
+        const useText = this.props.text || false;
 
         return (
             <div className={ cn.searchBar + ' ' + this.props.className||'' }>
@@ -51,9 +54,9 @@ class SearchBar extends React.Component {
                         onChange={ this.handleChange }
                         placeholder={ placeholder }
                         value={ this.state.searchQuery } />
-                    <button type="submit" className={ this.props.text ? cn.text : '' }>
-                        { this.props.text && "Search" }
-                        { !this.props.text && (<i className={"hide-material-icons material-icons " + cn.buttonIcon}>search</i>)}
+                    <button type="submit" className={ useText ? cn.text : '' }>
+                        { useText && "Search" }
+                        { !useText && (<i className={"hide-material-icons material-icons " + cn.buttonIcon}>search</i>)}
                     </button>
                 </form>
             </div>
