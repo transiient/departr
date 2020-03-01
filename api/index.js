@@ -5,7 +5,6 @@ const app = express();
 const soap = require('soap');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const util = require('util');
 
 if (!process.env.API_TOKEN_TRAIN||!process.env.API_URL_TRAIN) {
     console.log("Please copy /example.env to /.env and insert required environment variables.");
@@ -43,10 +42,11 @@ function searchTrainStations(query, _data, _err) {
 //todo: save in database instead of local variable
 let __popularStations__ = [];
 function registerStationView(crs) {
+    // todo: As array is sorted, this could use binary search
     for (let i = 0; i < __popularStations__.length; i++) {
         if (__popularStations__[i].crs === crs) {
             __popularStations__[i].hitCount += 1;
-            return;
+            return __popularStations__[i].hitCount;
         }
     }
     __popularStations__.push({crs, hitCount: 1});
@@ -56,6 +56,7 @@ function getPopularStations(limit = 5) {
     return (__popularStations__.slice(0, limit));
 }
 function getStationHitCount(crs) {
+    // todo: As array is sorted, this could use binary search
     for (let i = 0; i < __popularStations__.length; i++) {
         if (__popularStations__[i].crs === crs)
             return __popularStations__[i].hitCount;
@@ -63,22 +64,45 @@ function getStationHitCount(crs) {
     return 0;
 }
 
+function isOnTime(scheduled, expected) {
+    console.log("isOnTime", scheduled, expected);
+    if (expected.toLowerCase() === "on time") {
+        console.log("on time");
+        return true;
+    }
+    if (expected === scheduled) {
+        console.log("match");
+        return true;
+    }
+    return false;
+}
+function getExpectedTime(scheduled, expected) {
+    const onTime = (expected.toLowerCase() === "on time") || (expected === scheduled);
+    const cancelled = (expected.toLowerCase() === "cancelled");
+    const delayUnknown = (expected.toLowerCase() === "delayed");
+
+    if (onTime)
+        return scheduled;
+    else if (cancelled)
+        return scheduled;
+    else if (delayUnknown)
+        return "DELAY";
+    else
+        return expected;
+}
 function formatCallingPoint(callingPoint) {
     let out = {
         station: {
-            name: callingPoint.locationName || '', // OR blank is temporary to fix a bug where callingPoint may be undefined
-            crs: callingPoint.crs || '' // OR blank is temporary to fix a bug where callingPoint may be undefined
+            name: callingPoint.locationName || '',
+            crs: callingPoint.crs || ''
         },
+        cancelled: callingPoint.et.toLowerCase() === "cancelled",
         time: {
             scheduled: callingPoint.st,
-            expected:
-                //? See comments below for explanation of this absolute STATE
-                callingPoint.et==="On time" ? callingPoint.st :
-                callingPoint.et==="Delayed" ? "--:--" :
-                callingPoint.et==="Cancelled" ? callingPoint.st : callingPoint.et,
-            onTime: callingPoint.et==="On time"
+            expected: getExpectedTime(callingPoint.st, callingPoint.et),
+            onTime: isOnTime(callingPoint.st, callingPoint.et)
         }
-    };
+    }
 
     if (out.station.name === '' || out.station.crs === '')
         console.error('formatCallingPoint() callingPoint ->', callingPoint);
@@ -97,14 +121,10 @@ function formatCallingPoints(callingPoint) {
         callingPoints = callingPoint;
     }
 
-    console.log("calling points")
-    console.dir(callingPoints);
-
     return (callingPoints.map((point) => formatCallingPoint(point)));
 }
 
 function formatService(service) {
-    console.log("formatService", service);
     let out = {
         serviceType: service.serviceType,
         serviceID: service.serviceID,
@@ -121,42 +141,31 @@ function formatService(service) {
             name: service.destination.location[0].locationName,
             crs: service.destination.location[0].crs
         },
-        cancelled: service.etd==="Cancelled",
+        cancelled: service.etd.toLowerCase() === "cancelled",
         time: {
             scheduled: service.std,
-            //?
-            /* apologies for the nesting
-                If etd is "On time", return the scheduled time (front-end should use etd by default)
-                If etd is "Delayed", return a blank time (front-end should mark delayed)
-                If etd is "Cancelled", return a blank time (front-end should mark cancelled)
-            */
-            expected:
-                service.etd==="On time" ? service.std :
-                service.etd==="Delayed" ? "--:--" :
-                service.etd==="Cancelled" ? service.std : service.etd,
-            onTime: service.etd==="On time"
+            expected: getExpectedTime(service.std, service.etd),
+            onTime: isOnTime(service.std, service.etd)
         },
         //! service.subsequentCallingPoints.callingPointList.callingPoint SOMETIMES DOESN'T EXIST
-        // THANKS AGAIN NRE
         // todo(urgent):
-        // pass an empty array to formatCallingPoints if any of: subsequentCallingPoints, callingPointList, or callingPoint do not exist.
+        // pass an empty array to formatCallingPoints if any of: subsequentCallingPoints, callingPointList, or callingPoint do not exist
         callingPoints: formatCallingPoints(service.subsequentCallingPoints.callingPointList.callingPoint || []),
         direct: false
     };
 
-    out.direct = out.callingPoints.length===0;
+    //? If there are no actual calling oints, the final destination will be the only callingPoint
+    out.direct = out.callingPoints.length === 1;
 
     return out;
 }
 
 function formatServices(services) {
-    // let out = [];
-    // for (let i = 0; i < services.length; i++) {
-    //     out.push(formatService(services[i]));
-    // }
-    // return out;
-
     return (services.map((service) => formatService(service)));
+}
+
+function isStationCrsValid(crs) {
+    return StationCodes.filter((station) => station.crs === crs);
 }
 
 function getStationDetails(queryCrs, _data, _error) {
@@ -200,12 +209,14 @@ function getStationDetails(queryCrs, _data, _error) {
         _data({
             station: {
                 name: _boardResult.locationName,
-                crs: _boardResult.crs
+                crs: _boardResult.crs,
+                hitCount: getStationHitCount(_boardResult.crs)
             },
             services: _services
         });
     })
     .catch((err) => {
+        console.error("Error in getStationDetails: ", err);
         _error(err);
     });
 }
@@ -229,10 +240,16 @@ app.get('/station-detail/train/:crs', (req, res) => {
 
     registerStationView(req.params.crs);
 
-    // todo: error check to ensure station actually exists
-    //? check against StationCodes.json
     res.setHeader('Content-Type', 'application/json');
-    getStationDetails(req.params.crs, (data) => res.json(data), (err) => { console.log(err); res.json(err); });
+
+    if (isStationCrsValid(req.params.crs)) {
+        getStationDetails(req.params.crs, (data) => res.json(data), (err) => { console.log(err); res.json(err); });
+    }
+    else {
+        res.status(404).json({
+            message: "Station CRS does not exist"
+        });
+    }
 });
 
 app.get('/station-next-departure/train/:crs', (req, res) => {

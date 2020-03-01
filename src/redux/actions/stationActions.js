@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import { 
     UPDATE_STATION_DETAILS_STARTED,
     UPDATE_STATION_DETAILS_FAILED,
@@ -11,10 +13,10 @@ const updateStationDetailsStarted = () => {
         type: UPDATE_STATION_DETAILS_STARTED,
     }
 }
-const updateStationDetailsSucceeded = (station) => {
+const updateStationDetailsSucceeded = (stationDetails) => {
     return {
         type: UPDATE_STATION_DETAILS_SUCCEEDED,
-        payload: station
+        payload: stationDetails
     }
 }
 const updateStationDetailsFailed = (error) => {
@@ -29,12 +31,10 @@ export const updateStationDetails = (queryCrs) => {
     return (dispatch) => {
         dispatch(updateStationDetailsStarted());
 
-        // todo: use axios instead
-        fetch(API_URL+'/station-detail/train/' + queryCrs)
+        axios.get(API_URL+'/station-detail/train/' + queryCrs)
         .then((res) => {
-            res.json().then((json) => {
-            dispatch(updateStationDetailsSucceeded(json));
-        })})
+            dispatch(updateStationDetailsSucceeded(res.data));
+        })
         .catch((err) => {
             dispatch(updateStationDetailsFailed(err));
         })

@@ -35,45 +35,44 @@ class ListDepartures extends React.Component {
     render() {
         if (!this._shouldComponentRender(this.props.isLoading)) return <div>Loading</div>
 
-        if (this.props.error) {
-            // todo: probably put 404 redirect here
-            console.error(this.props.error);
-            return (<div>Error</div>);
-        }
-
         const {
             isLoading,
             error,
-            station
+            details
         } = this.props;
-        console.log(this.props);
 
-        const pageTitle = (station.station.name + " departures | departr");
+        if (error) console.error(error);
 
         return (
             <div className={"page " + cn.pageContainer}>
-                <Helmet>
-                    <title>{ pageTitle }</title>
-                </Helmet>
-
                 { isLoading &&
                 <div className={cn.loading}>
+                    <Helmet>
+                        <title>{ 'Loading | departr' }</title>
+                    </Helmet>
                     Loading departures...
                 </div> }
 
                 { error && 
                 <div className={cn.error}>
-                    Error. See console.
+                    <Helmet>
+                        <title>{ 'Error - departures | departr' }</title>
+                    </Helmet>
+                    Error: { error.message }
                 </div> }
 
-                { !isLoading &&
+                { (!isLoading && !error) &&
                 <div className={cn.wrapper}>
+                    <Helmet>
+                        <title>{ details.station.name + " departures | departr" }</title>
+                    </Helmet>
                     <div className={cn.title}>
-                        Departures from <span className={cn.pink}>{ station.station.name }</span>
+                        Departures from <span className={cn.pink}>{ details.station.name }</span>
                     </div>
 
                     <Times
-                        services={ station.services }
+                        classNames={cn.times}
+                        services={ details.services }
                     />
                 </div> }
             </div>
@@ -82,11 +81,10 @@ class ListDepartures extends React.Component {
 }
 
 const mapStateToProps = (store) => {
-    console.dir(store.station);
     return {
         isLoading: store.station.isLoading,
         error: store.station.error,
-        station: store.station.station
+        details: store.station.details
     }
 }
 

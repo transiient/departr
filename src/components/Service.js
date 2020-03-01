@@ -125,6 +125,7 @@ export let PTService = PT.exact({
             name: PT.string.isRequired,
             crs: PT.string.isRequired
         }).isRequired,
+        cancelled: PT.bool.isRequired,
         time: PT.exact({
             scheduled: PT.string.isRequired,
             expected: PT.string.isRequired,

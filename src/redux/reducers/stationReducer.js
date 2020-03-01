@@ -21,7 +21,7 @@ export const stationDetailReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isLoading: false,
-                station: action.payload
+                details: action.payload
             }
         case UPDATE_STATION_DETAILS_FAILED:
             return {
