@@ -20,6 +20,11 @@ class Header extends React.Component {
                 </Link>
 
                 <div className={cn.navContainer}>
+                    <div className={cn.navMenuButton}>
+                        <div className={cn.nmbp1}></div>
+                        <div className={cn.nmbp2}></div>
+                        <div className={cn.nmbp3}></div>
+                    </div>
                     <ul className={cn.nav}>
                         <li><NLink to="/">Home</NLink></li>
                         <li><NLink to="/search">Search</NLink></li>
@@ -28,7 +33,7 @@ class Header extends React.Component {
                     </ul>
                 </div>
 
-                <SearchBar handleSearch={ this.props.handleSearch } className={cn.searchBarHeader}  />
+                <SearchBar className={cn.searchBarHeader}  />
             </div>
         );
     }
