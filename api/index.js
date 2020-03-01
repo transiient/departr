@@ -92,7 +92,11 @@ function getExpectedTime(scheduled, expected) {
         return expected;
 }
 function getOperatorHomepageUrl(operatorCode) {
-    return TrainOperatingCompanies.filter((operator) => operator.code === operatorCode) || '';
+    const matchingToc = TrainOperatingCompanies.filter((operator) => operator.code === operatorCode);
+
+    if (matchingToc.length > 0)
+        return matchingToc[0].homepageUrl;
+    return "";
 }
 
 function formatCallingPoint(callingPoint) {
@@ -101,7 +105,7 @@ function formatCallingPoint(callingPoint) {
             name: callingPoint.locationName || '',
             crs: callingPoint.crs || ''
         },
-        cancelled: callingPoint.et.toLowerCase() === "cancelled",
+        cancelled: (callingPoint.et || '').toLowerCase() === "cancelled",
         time: {
             scheduled: callingPoint.st,
             expected: getExpectedTime(callingPoint.st, callingPoint.et),
