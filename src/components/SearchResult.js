@@ -48,7 +48,7 @@ export let PTSearchResult = PT.exact({
     "Station Name": PT.string.isRequired
 });
 SearchResult.propTypes = {
-    detail: PT.arrayOf(PTSearchResult.isRequired).isRequired
+    detail: PTSearchResult.isRequired
 }
 
 export default SearchResult;
