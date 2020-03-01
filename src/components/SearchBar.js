@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import { getHistory } from '../App';
 
 import cn from './SearchBar.module.scss';
 
@@ -38,14 +38,8 @@ class SearchBar extends React.Component {
         const placeholder = this.props.placeholder || '';
 
         if (this.state.shouldSearch === true) {
-            // todo: this is causing error in render method
-            //! fix asap
-            //? how can shouldSearch be reset?
-            /*
-                Warning: Cannot update during an existing state transition
-            */
             this.setState({ shouldSearch: false });
-            return (<Redirect to={ '/search/' + this.state.searchQuery }/>);
+            getHistory().push('/search/' + this.state.searchQuery);
         }
 
         return (
