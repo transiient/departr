@@ -43,11 +43,12 @@ class SearchResult extends Component {
     }
 }
 
+export let PTSearchResult = PT.exact({
+    "CRS Code": PT.string.isRequired,
+    "Station Name": PT.string.isRequired
+});
 SearchResult.propTypes = {
-    detail: PT.arrayOf(PT.exact({
-        "CRS Code": PT.string.isRequired,
-        "Station Name": PT.string.isRequired
-    }).isRequired).isRequired
+    detail: PT.arrayOf(PTSearchResult.isRequired).isRequired
 }
 
 export default SearchResult;
