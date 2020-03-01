@@ -98,42 +98,44 @@ class Service extends React.Component {
 }
 
 //todo: PLEASE, for the love of god, REFACTOR THIS SOMEHOW
-Service.propTypes = {
-    service: PT.exact({
-        serviceType: PT.string.isRequired,
-        serviceID: PT.string.isRequired,
-        rsid: PT.string.isRequired,
-        operator: PT.exact({
-            name: PT.string.isRequired,
-            code: PT.string.isRequired
-        }).isRequired,
-        stationOrigin: PT.exact({
+export let PTService = PT.exact({
+    serviceType: PT.string.isRequired,
+    serviceID: PT.string.isRequired,
+    rsid: PT.string.isRequired,
+    operator: PT.exact({
+        name: PT.string.isRequired,
+        code: PT.string.isRequired
+    }).isRequired,
+    stationOrigin: PT.exact({
+        name: PT.string.isRequired,
+        crs: PT.string.isRequired
+    }).isRequired,
+    stationDestination: PT.exact({
+        name: PT.string.isRequired,
+        crs: PT.string.isRequired
+    }).isRequired,
+    cancelled: PT.bool.isRequired,
+    time: PT.exact({
+        scheduled: PT.string.isRequired,
+        expected: PT.string.isRequired,
+        onTime: PT.bool.isRequired
+    }).isRequired,
+    callingPoints: PT.arrayOf(PT.exact({
+        station: PT.exact({
             name: PT.string.isRequired,
             crs: PT.string.isRequired
         }).isRequired,
-        stationDestination: PT.exact({
-            name: PT.string.isRequired,
-            crs: PT.string.isRequired
-        }).isRequired,
-        cancelled: PT.bool.isRequired,
         time: PT.exact({
             scheduled: PT.string.isRequired,
             expected: PT.string.isRequired,
             onTime: PT.bool.isRequired
-        }).isRequired,
-        callingPoints: PT.arrayOf(PT.exact({
-            station: PT.exact({
-                name: PT.string.isRequired,
-                crs: PT.string.isRequired
-            }).isRequired,
-            time: PT.exact({
-                scheduled: PT.string.isRequired,
-                expected: PT.string.isRequired,
-                onTime: PT.bool.isRequired
-            }).isRequired
-        }).isRequired).isRequired,
-        direct: PT.bool.isRequired
-    })
+        }).isRequired
+    }).isRequired).isRequired,
+    direct: PT.bool.isRequired
+});
+
+Service.propTypes = {
+    service: PTService.isRequired
 }
 
 export default Service;

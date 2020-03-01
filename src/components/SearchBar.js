@@ -67,4 +67,6 @@ class SearchBar extends React.Component {
     }
 }
 
+// todo: does this need PropTypes? Doesn't seem so.
+
 export default SearchBar;

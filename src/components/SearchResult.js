@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
+import PT from 'prop-types';
 import { Link } from 'react-router-dom';
 
 import cn from './SearchResult.module.scss';
 
-export default class SearchResult extends Component {
+//todo: convert to rfc
+class SearchResult extends Component {
     render() {
         const it = this.props.detail;
 
@@ -40,3 +42,12 @@ export default class SearchResult extends Component {
         )
     }
 }
+
+SearchResult.propTypes = {
+    detail: PT.arrayOf(PT.exact({
+        "CRS Code": PT.string.isRequired,
+        "Station Name": PT.string.isRequired
+    }).isRequired).isRequired
+}
+
+export default SearchResult;
