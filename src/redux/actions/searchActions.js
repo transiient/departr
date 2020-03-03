@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
     SEARCH_STATION_STARTED,
     SEARCH_STATION_SUCCEEDED,
@@ -31,13 +32,12 @@ export const searchStations = (query) => {
         dispatch(searchStarted());
 
         // todo: use axios instead
-        fetch(API_URL+'/station-search/train/' + query)
+        axios.get(API_URL+'/train-station/search/' + query)
         .then((res) => {
-            res.json().then((json) => {
-            dispatch(searchSucceeded({query, results: json}));
-        })})
+            dispatch(searchSucceeded({query, results: res.data}));
+        })
         .catch((err) => {
-            dispatch(searchFailed({query, error: err}));
+            dispatch(searchFailed({query, error: err.data}));
         })
     }
 }

@@ -247,7 +247,7 @@ app.get('/', (req, res) => {
 /*
     Get popular stations, or hitCount of station if crs is provided
 */
-app.get('/station-detail/popular/:crs?', (req, res) => {
+app.get('/train-station/popular/:crs?', (req, res) => {
     console.log("popular stations -> " + req.params.crs);
     res.setHeader('Content-Type', 'application/json');
 
@@ -260,7 +260,7 @@ app.get('/station-detail/popular/:crs?', (req, res) => {
 /*
     Get details for provided station crs
 */
-app.get('/station-detail/train/:crs', (req, res) => {
+app.get('/train-station/details/:crs', (req, res) => {
     console.log("station-details -> " + req.params.crs);
 
     registerStationView(req.params.crs);
@@ -280,7 +280,7 @@ app.get('/station-detail/train/:crs', (req, res) => {
 /*
     Get next departure from station crs
 */
-app.get('/station-next-departure/train/:crs', (req, res) => {
+app.get('/train-station/next-departure/:crs', (req, res) => {
     console.log("station-next-departure -> " + req.params.crs);
 
     res.setHeader('Content-Type', 'application/json');
@@ -289,6 +289,14 @@ app.get('/station-next-departure/train/:crs', (req, res) => {
         let _departure = data.GetStationBoardResult.trainServices.service[0];
         res.json(_departure)
     }, (err) => res.json(err));
+});
+
+app.get('/train-station/search/:crs', (req, res) => {
+    console.log("search -> ", req.params.crs);
+
+    res.setHeader('Content-Type', 'application/json');
+
+    searchTrainStations(req.params.crs, (results) => res.json(results), (error) => res.json(error));
 });
 
 // Run app

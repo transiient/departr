@@ -31,7 +31,7 @@ export const updateStationDetails = (queryCrs) => {
     return (dispatch) => {
         dispatch(updateStationDetailsStarted());
 
-        axios.get(API_URL+'/station-detail/train/' + queryCrs)
+        axios.get(API_URL+'/train-station/details/' + queryCrs)
         .then((res) => {
             dispatch(updateStationDetailsSucceeded(res.data));
         })
