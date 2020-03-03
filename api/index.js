@@ -3,14 +3,20 @@ const uniq = require('lodash/uniq');
 const express = require('express')
 const app = express();
 const soap = require('soap');
+const axios = require('axios').default;
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-if (!process.env.API_TOKEN_TRAIN||!process.env.API_URL_TRAIN) {
+// Check env vars
+if (!process.env.API_TOKEN_TRAIN ||
+    !process.env.API_URL_TRAIN ||
+    !process.env.OPENRAILDATA_USERNAME ||
+    !process.env.OPENRAILDATA_PASSWORD) {
     console.log("Please copy /example.env to /.env and insert required environment variables.");
     console.log("   Server might fail to connect if these variables remain unset");
     console.log("   If /.env already exists, try copying it to /api/.env");
 }
+
 const API_URL_TRAIN      = process.env.API_URL_TRAIN;
 const API_TOKEN_TRAIN    = process.env.API_TOKEN_TRAIN;
 const EXPRESS_PORT = 3001;
@@ -231,10 +237,16 @@ function getStationDetails(queryCrs, _data, _error) {
     });
 }
 
+/*
+    Hello world
+*/
 app.get('/', (req, res) => {
-    res.send("Hello, you've hit the API!");
+    res.send("Hello");
 });
 
+/*
+    Get popular stations, or hitCount of station if crs is provided
+*/
 app.get('/station-detail/popular/:crs?', (req, res) => {
     console.log("popular stations -> " + req.params.crs);
     res.setHeader('Content-Type', 'application/json');
@@ -245,6 +257,9 @@ app.get('/station-detail/popular/:crs?', (req, res) => {
     res.json(getPopularStations());
 });
 
+/*
+    Get details for provided station crs
+*/
 app.get('/station-detail/train/:crs', (req, res) => {
     console.log("station-details -> " + req.params.crs);
 
@@ -262,7 +277,12 @@ app.get('/station-detail/train/:crs', (req, res) => {
     }
 });
 
+/*
+    Get next departure from station crs
+*/
 app.get('/station-next-departure/train/:crs', (req, res) => {
+    console.log("station-next-departure -> " + req.params.crs);
+
     res.setHeader('Content-Type', 'application/json');
 
     getStationDetails(req.params.crs, (data) => {
@@ -271,28 +291,5 @@ app.get('/station-next-departure/train/:crs', (req, res) => {
     }, (err) => res.json(err));
 });
 
-app.get('/station-search/:method/:query?', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-
-    if (!req.params.query) {
-        res.status(400).json({error: 'Missing query parameter'});
-        return;
-    }
-
-    switch(req.params.method) {
-        case 'train':
-            searchTrainStations(req.params.query, (data) => res.json(data), (err) => res.json(err));
-            break;
-        case 'bike':
-            res.status(501).json({error: 'This service is not yet implemented.'});
-            break;
-        case 'bus':
-            res.status(501).json({error: 'This service is not yet implemented.'});
-            break;
-        default:
-            res.status(400).json({error: 'Invalid method parameter value'});
-            break;
-    }
-});
-
+// Run app
 app.listen(EXPRESS_PORT, () => console.log("Running API on port " + EXPRESS_PORT + "."));
