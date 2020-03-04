@@ -7,43 +7,44 @@ const axios = require('axios').default;
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-// Check env vars
-if (!process.env.API_TOKEN_TRAIN ||
-    !process.env.API_URL_TRAIN ||
-    !process.env.OPENRAILDATA_USERNAME ||
-    !process.env.OPENRAILDATA_PASSWORD) {
-    console.log("Please copy /example.env to /.env and insert required environment variables.");
-    console.log("   Server might fail to connect if these variables remain unset");
-    console.log("   If /.env already exists, try copying it to /api/.env");
-}
+// Classes
+const KnowledgeBaseAPI = require('./upstreamRequestHelpers/KnowledgeBaseAPI');
 
-const API_URL_TRAIN      = process.env.API_URL_TRAIN;
-const API_TOKEN_TRAIN    = process.env.API_TOKEN_TRAIN;
-const EXPRESS_PORT = 3001;
-
+// Data
 const StationCodes = require('../src/data/station_codes.json');
 const TrainOperatingCompanies = require('../src/data/train_operating_companies.json');
+
+const {
+    API_PORT,
+    LDBWS_TOKEN,
+    ORD_USERNAME,
+    ORD_PASSWORD
+} = process.env;
+
+// Latest URL from: https://lite.realtime.nationalrail.co.uk/openldbws/
+const LDBWS_URL = 'https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01';
+
+if (API_PORT === null || LDBWS_TOKEN === null || ORD_USERNAME === null || ORD_PASSWORD === null) {
+    console.error("Required environment variable(s) not set");
+    console.log("Please copy /example.env to /.env and insert the required environment variables.");
+    console.log("   departr API cannot run without these variables set.");
+}
+
+const knowledgeBaseAPI = new KnowledgeBaseAPI(ORD_USERNAME, ORD_PASSWORD);
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 function searchTrainStations(query, _data, _err) {
-    const data = StationCodes.map((station) => ({
-        name: station["Station Name"],
-        crs: station["CRS Code"]
-    }));
-    let _rv = [];
-    let _match = (data.filter((station) => (station.crs).toLowerCase() === query.toLowerCase()));
-    let _additions = (data.filter((station) => ((station.crs+station.name).toLowerCase().includes(query.toLowerCase()))));
+    let _matchCrs = (StationCodes.filter((station) => (station["CRS Code"]).toLowerCase() === query.toLowerCase()));
+    let _similar = (StationCodes.filter((station) => ((station["CRS Code"]+station["Station Name"]).toLowerCase().includes(query.toLowerCase()))));
 
-    for (let i = 0; i < _additions.length; i++)
-        _match.push(_additions[i]);
+    for (let i = 0; i < _similar.length; i++)
+        _matchCrs.push(_similar[i]);
 
-    _rv = uniq(_match);
-
-    _data(_rv);
-    return;
+    _matchCrs = uniq(_matchCrs);
+    _data(_matchCrs.map((station) => ({ name: station["Station Name"], crs: station["CRS Code"]})));
 }
 
 //todo: save in database instead of local variable
@@ -72,13 +73,10 @@ function getStationHitCount(crs) {
 }
 
 function isOnTime(scheduled, expected) {
-    console.log("isOnTime", scheduled, expected);
     if (expected.toLowerCase() === "on time") {
-        console.log("on time");
         return true;
     }
     if (expected === scheduled) {
-        console.log("match");
         return true;
     }
     return false;
@@ -97,6 +95,7 @@ function getExpectedTime(scheduled, expected) {
     else
         return expected;
 }
+// todo: update to use KB API
 function getOperatorHomepageUrl(operatorCode) {
     const matchingToc = TrainOperatingCompanies.filter((operator) => operator.code === operatorCode);
 
@@ -300,4 +299,4 @@ app.get('/train-station/search/:crs', (req, res) => {
 });
 
 // Run app
-app.listen(EXPRESS_PORT, () => console.log("Running API on port " + EXPRESS_PORT + "."));
+app.listen(API_PORT, () => console.log("Running API on port " + API_PORT + "."));
