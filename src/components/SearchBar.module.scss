@@ -1,22 +1,25 @@
 @import '../Variables.scss';
 
 .searchBar {
+    max-width: 48ch;
+    border: 1px solid $color-grey-medium;
+    border-radius: 2em;
+    overflow: hidden;
+
+    background-color: $color-grey-light;
+
+    transition: $transition-time;
+    // todo: make input:active enable box-shadow too!
+    &:hover {
+        box-shadow: $box-shadow-gentle;
+    }
+
     form {
         display: flex;
         justify-content: flex-start;
-        align-items: center;
-    }
-    border: 1px solid $color_grey_medium;
-    border-radius: 8px;
-    overflow: hidden;
+        align-items: center; // todo: try stretch and remove fixed height of button?
 
-    background-color: $color_grey_light;
-
-    transition: $ttime_link;
-
-    // todo: make input:active enable box-shadow too!
-    &:hover {
-        box-shadow: $box_shadow_gentle;
+        width: 100%;
     }
 
     // Reset default styles
@@ -31,14 +34,16 @@
         display: inline-block;
         vertical-align: top;
 
+        width: 100%;
+
         padding: 8px;
 
-        background-color: $color_white;
+        background-color: $color-white;
 
-        transition: $ttime_link;
+        transition: $transition-time;
 
-        &:hover { background-color: #ececec; }
-        &:focus { background-color: #ececec; }
+        // &:hover { background-color: $color-white; }
+        // &:focus { background-color: $color-white; }
     }
 
     button[type="submit"] {
@@ -50,17 +55,17 @@
         &.text { padding: 8px 16px; }
         font-size: 16px;
 
-        background-color: $color_grey_light;
-        border-left: 1px solid $color_grey_medium;
-        transition: $ttime_link;
+        background-color: $color-button-bg-inactive;
+        border-left: 1px solid $color-button-bg-inactive;
+        transition: $transition-time;
 
         &.text:hover { padding: 8px 24px; }
         &:hover {
-            background-color: $color_pink;
-            border-left: 1px solid $color_pink;
+            background-color: $color-button-bg-hover;
+            border-left: 1px solid $color-button-bg-hover;
         }
         &:active {
-            background-color: darken($color_pink, 8%);
+            background-color: $color-button-bg-active;
         }
     }
 }

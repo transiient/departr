@@ -8,9 +8,9 @@
     padding: 16px;
     overflow: hidden;
 
-    background-color: #242424;
+    background-color: $color-background-alt;
 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: $box-shadow-medium;
 }
 .backgroundTextHuge {
     display:none;//temp
@@ -21,13 +21,13 @@
     top: -60px; right: 0; bottom: 0; left: 0;
     font-size: 360px;
 
-    color: $color_pink;
+    color: $color-deeppurple;
 
     opacity: 0.04;
 }
 .cancelled {
     opacity: .5;
-    transition: $ttime_link;
+    transition: $transition-time;
     &:hover { opacity: 1; }
 }
 
@@ -68,22 +68,36 @@
         border-radius: 8px;
         padding: 8px;
 
-        background-color: $color_white;
+        background-color: $color-black;
 
-        color: $color_black;
+        color: $color-white;
 
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        box-shadow: $box-shadow-medium;
     }
 
+    // todo: Move button styles into global style
     .buttonJourneyMap a {
         border-radius: 8px;
         padding: 8px;
 
-        background-color: $color_pink;
+        background-color: $color-button-bg-inactive;
 
-        color: $color_black;
+        color: $color-button-fg-inactive;
 
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        box-shadow: $box-shadow-medium;
+
+        transition: $transition-time;
+
+        &:hover {
+            background-color: $color-button-bg-hover;
+
+            color: $color-button-fg-hover;
+        }
+        &:active {
+            background-color: $color-button-bg-active;
+
+            color: $color-button-fg-active;
+        }
     }
 
     .fromTo {
@@ -109,7 +123,7 @@
         .origin { grid-area: d; }
 
         .destination {
-            color: $color_pink;
+            color: $color-accent-a;
         }
     }
 
@@ -137,9 +151,9 @@
 
         border-radius: 4px;
 
-        background-color: #2f2f2f;
+        background-color: $color-background-light;
 
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        box-shadow: $box-shadow-medium;
 
         .callingPointWrapper {
             // todo: make each <li /> child aligned down the list

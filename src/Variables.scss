@@ -1,18 +1,47 @@
-$color_white: #FAFAFA;
-$color_black: #191919;
-$color_background: #191919;
-$color_background_lighter: #242424;
-$color_grey_medium: #91989C;
-$color_grey_light: #ECECEC;
-$color_pink: #E6006C;
+// -- colour names -- //
+$color-white: #F7F7F2;
+$color-black: #12130F;
+$color-grey-medium: #8C8C9F;
+$color-grey-light: #ECECEC;
+$color-greygreen: #92AC86;
+$color-orangered: #9E2419;
+$color-deeppurple: #320E3B;
+// -- colour uses -- //
+$color-background: $color-white;
+$color-background-alt: darken($color-white, 15%);
+$color-background-light: #2F2F2F;
+$color-accent-a: $color-orangered;
+$color-accent-b: $color-deeppurple;
+// -- colour uses - buttons -- //
+$color-button-bg-inactive: $color-grey-medium;
+$color-button-fg-inactive: $color-black;
+$color-button-bg-hover: $color-orangered;
+$color-button-fg-hover: $color-white;
+$color-button-bg-active: darken($color-accent-a, 15%);
+$color-button-fg-active: $color-white;
+// -- colour uses - text -- //
+$color-text: $color-black;
+$color-text-link-inactive: $color-grey-medium;
+$color-text-link-hover: $color-accent-a;
+$color-text-link-active: darken($color-accent-a, 15%);
 
-$color_link_inactive: $color_grey_medium;
-$color_link_hover: $color_white;
-$color_link_hover_dark: $color_black;
-$color_link_active: $color_white;
-$color_link_active_dark: $color_black;
+// -- constants -- //
+$transition-time: .14s;
 
-$ttime_link: .14s;
+// -- shadows and effects -- //
+$box-shadow-gentle: 0 2px 4px rgba(0,0,0,0.1);
+$box-shadow-medium: 0 4px 8px rgba(0,0,0,0.2);
 
-$box_shadow_gentle: 0 2px 4px rgba(0,0,0,0.1);
-$box_shadow_medium: 0 4px 8px rgba(0,0,0,0.2);
+// -- fonts -- //
+$font-family: "Lato", sans-serif;
+$font-family-alt: "Oswald", sans-serif;
+
+$font-size-body: 16px;
+$font-size-small: 10px;
+$font-size-medium: 1.2em;
+$font-size-large: 2em;
+$font-size-huge: 3.2em;
+// -- fonts - weights -- //
+$font-weight-regular: 400;
+$font-weight-bold: 700;
+$font-weight-light: 300;

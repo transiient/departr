@@ -10,13 +10,13 @@
     margin: 0 16px 24px 16px;
 
     border-radius: 12px;
-    background-color: $color_background_lighter;
+    background-color: $color-background-alt;
 
     overflow: hidden;
 
-    transition: $ttime_link;
+    transition: $transition-time;
     &:hover {
-        box-shadow: $box_shadow_medium;
+        box-shadow: $box-shadow-medium;
     }
 }
 
@@ -36,9 +36,9 @@
         margin: 0 16px 0 8px;
         border-radius: 8px;
 
-        background-color: $color_white;
+        background-color: $color-black;
 
-        color: $color_black;
+        color: $color-white;
         .mode {
             // Mode icon (padding adjusted for top margin)
             padding: 9px 8px 7px 8px;
@@ -47,7 +47,7 @@
             // CRS code
             padding: 8px 12px 8px 0;
 
-            font-weight: 600;
+            font-weight: $font-weight-bold;
         }
     }
 
@@ -78,7 +78,7 @@
             // Label
             position: relative;
 
-            font-size: 12px;
+            font-size: $font-size-small;
             text-transform: uppercase;
             text-align: center;
         }

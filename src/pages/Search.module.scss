@@ -12,21 +12,6 @@
         "results"
 }
 
-.heading {
-    grid-area: heading;
-    padding: 64px 16px;
-
-    text-align: center;
-    font-size: 4em;
-    font-weight: 200;
-    color: $color_pink;
-
-    .query {
-        font-weight: 400;
-        color: $color_white;
-    }
-}
-
 .searchBarContainer {
     width: 100%;
     max-width: 80ch;
@@ -39,7 +24,7 @@
     border: 0;
     border-radius: 12px;
 
-    background-color: $color_white;
+    background-color: $color-background-alt;
 
     input[type="text"] {
         padding: 24px 16px;
@@ -55,8 +40,8 @@
 
 .filters {
     margin: 16px auto;
-    color: $color_pink;
-    border-bottom: 2px solid $color_pink;
+    color: $color-accent-a;
+    border-bottom: 2px solid $color-accent-a;
 }
 
 .resultsList {

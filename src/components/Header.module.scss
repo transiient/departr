@@ -10,11 +10,11 @@
     width: 100%;
     min-height: 80px;
 
-    background-color: $color_white;
+    background-color: $color-white;
 
-    color: $color_black;
+    color: $color-black;
 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    box-shadow: $box-shadow-medium;
 }
 
 .titleWrapper {
@@ -29,9 +29,9 @@
     margin: 0 16px;
 
     // Alt text
-    color: #ec006c;
-    font-size: 36px;
-    font-family: "Futura PT Light", sans-serif;
+    color: $color-accent-a;
+    font-size: 36px; // Keep consistent size
+    font-weight: $font-weight-light;
 }
 
 .navContainer {
@@ -45,7 +45,7 @@
         display: block;
         width: 24px;
         height: 2px;
-        background-color: $color_black;
+        background-color: $color-background;
     }
 
     .nmbp2 {
@@ -62,23 +62,24 @@
 .navLink {
     padding: 8px 16px;
 
-    color: $color_link_inactive;
+    color: $color-text-link-inactive;
 
-    transition: $ttime_link;
+    transition: $transition-time;
 
     &:hover {
-        color: $color_link_hover_dark;
+        color: $color-text-link-hover;
     }
 }
 .navLinkActive {
-    color: $color_link_active_dark;
+    color: $color-text-link-active;
 
     &:hover {
-        color: $color_link_active_dark;
+        color: $color-text-link-hover;
     }
 }
 
 .searchBarHeader {
+    flex: 1;
     margin: 16px 16px;
 }
 

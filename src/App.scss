@@ -4,16 +4,16 @@ body {
     font-family: "Futura PT", "Open Sans", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    
-    font-size: 16px;
-    color: $color_white;
 
-    background: $color_background;
+    font-size: $font-size-body;
+    color: $color-text;
+
+    background: $color-background;
 }
-    
+
 i.material-icons {
     display: inline-block;
-    font-size: 16px;
+    font-size: $font-size-body;
 
     &:before { display: none; }
 }
@@ -23,41 +23,53 @@ a {
 
     text-decoration: none;
     border: none;
-    color: $color_link_inactive;
+    color: $color-text-link-inactive;
 
-    transition: $ttime_link;
+    transition: $transition-time;
 
-    &:hover { color: $color_link_hover; }
-    &:active { color: $color_link_active; }
+    &:hover { color: $color-text-link-hover; }
+    &:active { color: $color-text-link-active; }
 }
 
 h1 {
-    font-size: 3.2em;
+    font-size: $font-size-huge;
 }
 
 h2 {
-    font-size: 2em;
+    font-size: $font-size-large;
 }
 
 h3 {
-    font-size: 1.2em;
+    font-size: $font-size-medium;
 }
 
-.textColorPink {
-    color: $color_pink;
+.textColorAccent {
+    color: $color-accent-a;
 }
 .textWeightBold {
-    font-weight: bold;
+    font-weight: $font-weight-bold;
+}
+.textWeightLight {
+    font-weight: $font-weight-light;
+}
+.textTime {
+    font-family: $font-family-alt;
+    font-size: $font-size-medium;
+}
+
+.pageTitleBlock {
+    // todo: continue styling
+    h1 {
+        margin: 48px 0;
+
+        text-align: center;
+    }
 }
 
 .labelUppercaseSmall {
-    font-size: 10px;
+    font-size: $font-size-small;
     text-transform: uppercase;
     padding: 4px 0;
-}
-
-.textLarge {
-    font-size: 1.4em;
 }
 
 .typefaceMono {
