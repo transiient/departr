@@ -25,18 +25,18 @@ class SearchResult extends Component {
                         target="_blank" rel="noopener noreferrer"
                         href={ "https://www.google.com/maps/search/" + station.name + " station" }>
                         <i className="material-icons">map</i>
-                        <span className={cn.buttonLabel}>Location</span>
+                        <span className={cn.buttonLabel}>Map</span>
                     </a>
                     <Link className={cn.button}
                         to={ "/search/bus/" + station.name }>
                         <i className="material-icons">directions_bus</i>
-                        <span className={cn.buttonLabel}>Buses</span>
+                        <span className={cn.buttonLabel}>Bus</span>
                     </Link>
-                    <Link className={cn.button}
+                    {/*<Link className={cn.button}
                         to={ "/search/bike/" + station.name }>
                         <i className="material-icons">directions_bike</i>
                         <span className={cn.buttonLabel}>Bikes</span>
-                    </Link>
+                    </Link>*/}
                 </div>
             </li>
         )
