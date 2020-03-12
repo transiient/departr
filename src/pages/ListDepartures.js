@@ -5,77 +5,69 @@ import classnames from 'classnames';
 
 import Times from '../components/Times';
 
-import { updateStationDetails } from '../redux/actions/stationActions';
+import { updateStationDetails, updateStationServices } from '../redux/actions/stationActions';
 
 import cn from './ListDepartures.module.scss';
 
-class ListDepartures extends React.Component {
-    constructor(props) {
-        super(props);
+// todo: possibly find a nicer way to write this
+function Banner(props) {
+    return (
+        <>
+            { props.station.isLoading &&
+            <div className={classnames(cn.banner, cn.bannerLoading)}>
+                <h1>Loading...</h1>
+            </div>}
 
-        this._shouldComponentRender = this._shouldComponentRender.bind(this);
-    }
+            { !props.station.isLoading && !props.station.error &&
+            <div className={cn.banner}>
+                <Helmet><title>{ props.station.name + " departures | departr" }</title></Helmet>
+                <h1>Departures from <span className="textColourPink textWeightBold">{props.station.name}</span></h1>
+            </div>}
+        </>
+    )
+}
+
+class ListDepartures extends React.Component {
     componentDidMount() {
-        this.props.updateStationDetails(this.props.match.params.stationCrs);
+        const crs = this.props.match.params.crs;
+        this.props.updateStationDetails(crs);
+        this.props.updateStationServices(crs);
     } // componentDidMount()
 
     componentDidUpdate(prevProps) {
-        if (prevProps.match.params.stationCrs !== this.props.match.params.stationCrs) {
-            let newCrs = this.props.match.params.stationCrs;
+        if (prevProps.match.params.crs !== this.props.match.params.crs) {
+            let crs = this.props.match.params.crs;
 
-            this.props.updateStationDetails(newCrs);
+            this.props.updateStationDetails(crs);
+            this.props.updateStationServices(crs);
         }
     }
 
-    _shouldComponentRender(isLoading) {
-        if (isLoading === false)
-            return true;
-        return false;
-    }
-
     render() {
-        if (!this._shouldComponentRender(this.props.isLoading)) return <div>Loading</div>
+        const station = this.props.station;
+        const services = this.props.services;
 
-        const {
-            isLoading,
-            error,
-            details
-        } = this.props;
-
-        if (error) console.error(error);
+        // todo: error checking
+        //!
 
         return (
             <div className={"page " + cn.pageContainer}>
-                { isLoading &&
-                <div className={cn.loading}>
-                    <Helmet>
-                        <title>{ 'Loading | departr' }</title>
-                    </Helmet>
-                    Loading departures...
-                </div> }
-
-                { error && 
-                <div className={cn.error}>
-                    <Helmet>
-                        <title>{ 'Error - departures | departr' }</title>
-                    </Helmet>
-                    Error: { error.message }
-                </div> }
-
-                { (!isLoading && !error) &&
                 <div className={cn.wrapper}>
                     <Helmet>
-                        <title>{ details.station.name + " departures | departr" }</title>
+                        <title>{ "Departures | departr" }</title>
                     </Helmet>
-                    <h1 className={cn.title}>
-                        Departures from <span className={classnames("textColorPink", "textWeightBold")}>{ details.station.name }</span>
-                    </h1>
 
+                    <Banner station={station} />
+
+                    { (services.error || station.error) &&
+                    <div>An error occurred. Check console.</div>}
+
+                    { !services.isLoading && !services.error && services.services &&
                     <Times
                         classNames={cn.times}
-                        services={ details.services }
-                    />
-                </div> }
+                        services={ services.services }
+                    /> }
+                </div>
             </div>
         );
     }
@@ -83,15 +75,23 @@ class ListDepartures extends React.Component {
 
 const mapStateToProps = (store) => {
     return {
-        isLoading: store.station.isLoading,
-        error: store.station.error,
-        details: store.station.details
+        station: {
+            isLoading: store.station.station.isLoading,
+            error: store.station.station.error,
+            ...store.station.station.station
+        },
+        services: {
+            isLoading: store.station.services.isLoading,
+            error: store.station.services.error,
+            services: store.station.services.services
+        }
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        updateStationDetails: (crs) => dispatch(updateStationDetails(crs))
+        updateStationDetails: (crs) => dispatch(updateStationDetails(crs)),
+        updateStationServices: (crs) => dispatch(updateStationServices(crs))
     }
 }
 

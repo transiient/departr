@@ -2,13 +2,13 @@ require('dotenv').config();
 const uniq = require('lodash/uniq');
 const express = require('express')
 const app = express();
-const soap = require('soap');
-const axios = require('axios').default;
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const morgan = require('morgan');
 
 // Classes
 const KnowledgeBaseAPI = require('./upstreamRequestHelpers/KnowledgeBaseAPI');
+const LdbwsAPI = require('./upstreamRequestHelpers/LdbwsAPI');
 
 // Data
 const StationCodes = require('../src/data/station_codes.json');
@@ -18,11 +18,9 @@ const {
     API_PORT,
     LDBWS_TOKEN,
     ORD_USERNAME,
-    ORD_PASSWORD
+    ORD_PASSWORD,
+    RELOAD_STATIONS_ON_RELOAD
 } = process.env;
-
-// Latest URL from: https://lite.realtime.nationalrail.co.uk/openldbws/
-const LDBWS_URL = 'https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01';
 
 if (API_PORT === null || LDBWS_TOKEN === null || ORD_USERNAME === null || ORD_PASSWORD === null) {
     console.error("Required environment variable(s) not set");
@@ -30,9 +28,11 @@ if (API_PORT === null || LDBWS_TOKEN === null || ORD_USERNAME === null || ORD_PA
     console.log("   departr API cannot run without these variables set.");
 }
 
-const knowledgeBaseAPI = new KnowledgeBaseAPI(ORD_USERNAME, ORD_PASSWORD);
+const kbAPI = new KnowledgeBaseAPI(ORD_USERNAME, ORD_PASSWORD, RELOAD_STATIONS_ON_RELOAD);
+const ldbwsAPI = new LdbwsAPI(LDBWS_TOKEN);
 
 app.use(cors());
+app.use(morgan('combined'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -73,12 +73,8 @@ function getStationHitCount(crs) {
 }
 
 function isOnTime(scheduled, expected) {
-    if (expected.toLowerCase() === "on time") {
-        return true;
-    }
-    if (expected === scheduled) {
-        return true;
-    }
+    if (expected.toLowerCase() === "on time") return true;
+    if (expected === scheduled) return true;
     return false;
 }
 function getExpectedTime(scheduled, expected) {
@@ -86,14 +82,10 @@ function getExpectedTime(scheduled, expected) {
     const cancelled = (expected.toLowerCase() === "cancelled");
     const delayUnknown = (expected.toLowerCase() === "delayed");
 
-    if (onTime)
-        return scheduled;
-    else if (cancelled)
-        return scheduled;
-    else if (delayUnknown)
-        return "DELAY";
-    else
-        return expected;
+    if (onTime) return scheduled;
+    else if (cancelled) return scheduled;
+    else if (delayUnknown) return "DELAY";
+    else return expected;
 }
 // todo: update to use KB API
 function getOperatorHomepageUrl(operatorCode) {
@@ -105,6 +97,12 @@ function getOperatorHomepageUrl(operatorCode) {
 }
 
 function formatCallingPoint(callingPoint) {
+    //? Apparently NRE sometimes returns "at" instead of "et"
+    if (!callingPoint.et && callingPoint.at)
+        callingPoint.et = callingPoint.at
+    if (!callingPoint.et)
+        callingPoint.et = ''
+
     let out = {
         station: {
             name: callingPoint.locationName || '',
@@ -176,64 +174,11 @@ function formatService(service) {
 }
 
 function formatServices(services) {
-    return (services.map((service) => formatService(service)));
+    return services.map((service) => formatService(service));
 }
 
 function isStationCrsValid(crs) {
     return StationCodes.filter((station) => station.crs === crs);
-}
-
-function getStationDetails(queryCrs, _data, _error) {
-    const soapHeader = { "tok:AccessToken": { "tok:TokenValue": API_TOKEN_TRAIN } };
-
-    const wsdlOptions = {
-        "overrideRootElement": {
-            "namespace": "mns",
-            "xmlnsAttributes": [{ "name": "xmlns:mns", "value": "http://thalesgroup.com/RTTI/2017-10-01/ldb/" }]
-        }
-    }
-    const args = {
-        "mns:numRows": 10, // Number of services to return. [1 - 10]
-        "mns:crs": queryCrs, // CRS of queried station.
-        "mns:filterCrs": '', // Filter by origin or destination.
-        "mns:filterType": 'to', // Filter type. Origin ("from") or destination ("to").
-        "mns:timeOffset": 0, // Offset against current time. [-120 - 120]
-        "mns:timeWindow": 120 // How far to provide times for in minutes [-120 - 120]
-    }
-
-    soap.createClientAsync(API_URL_TRAIN, wsdlOptions)
-    .then((client) => {
-        client.addSoapHeader(soapHeader, '', 'tok'); // (header, name (does nothing), namespace)
-        return (client.GetDepBoardWithDetailsAsync(args));
-    })
-    .then((res) => {
-        // Deal with the request's result
-        const _boardResult = res[0].GetStationBoardResult;
-
-        //? sometimes, services is blank. eg: cls: CLP
-        // thanks, NRE.
-        if (!_boardResult.trainServices)
-            _boardResult.trainServices = {service: []};
-
-        const _services = formatServices(_boardResult.trainServices.service);
-        if (!_services) {
-            // todo: make nicer
-            throw new Error('Board Result data invalid');
-        }
-
-        _data({
-            station: {
-                name: _boardResult.locationName,
-                crs: _boardResult.crs,
-                hitCount: getStationHitCount(_boardResult.crs)
-            },
-            services: _services
-        });
-    })
-    .catch((err) => {
-        console.error("Error in getStationDetails: ", err);
-        _error(err);
-    });
 }
 
 /*
@@ -246,49 +191,58 @@ app.get('/', (req, res) => {
 /*
     Get popular stations, or hitCount of station if crs is provided
 */
-app.get('/train-station/popular/:crs?', (req, res) => {
-    console.log("popular stations -> " + req.params.crs);
+// app.get('/train-station/popular/:crs?', (req, res) => {
+//     console.log("popular stations -> " + req.params.crs);
+//     res.setHeader('Content-Type', 'application/json');
+
+//     if (req.params.crs) {
+//         res.json(getStationHitCount(req.params.crs));
+//     }
+//     res.json(getPopularStations());
+// });
+
+app.get('/train-station/details/:crs', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
 
-    if (req.params.crs) {
-        res.json(getStationHitCount(req.params.crs));
+    if (!isStationCrsValid) {
+        res.status(404).json({ message: "Station CRS does not exist" });
+        return;
     }
-    res.json(getPopularStations());
+
+    kbAPI.getStationDetails(req.params.crs)
+    .then((details) => {
+        res.json(details);
+    })
+    .catch((error) => {
+        console.error(error);
+        res.status(500).json(error);
+    });
 });
 
 /*
-    Get details for provided station crs
+    Get services for provided station crs
 */
-app.get('/train-station/details/:crs', (req, res) => {
-    console.log("station-details -> " + req.params.crs);
-
+app.get('/train-station/services/:crs', (req, res) => {
     registerStationView(req.params.crs);
 
     res.setHeader('Content-Type', 'application/json');
 
-    if (isStationCrsValid(req.params.crs)) {
-        getStationDetails(req.params.crs, (data) => res.json(data), (err) => { console.log(err); res.json(err); });
+    if (!isStationCrsValid) {
+        res.status(404).json({ message: "Station CRS does not exist" });
+        return;
     }
-    else {
-        res.status(404).json({
-            message: "Station CRS does not exist"
-        });
-    }
+
+    ldbwsAPI.getDepartureBoard(req.params.crs)
+    .then((board) => {
+        res.json(formatServices(board.trainServices.service));
+    })
+    .catch((error) => {
+        console.error(error);
+        res.status(500).json(error);
+    })
 });
 
-/*
-    Get next departure from station crs
-*/
-app.get('/train-station/next-departure/:crs', (req, res) => {
-    console.log("station-next-departure -> " + req.params.crs);
-
-    res.setHeader('Content-Type', 'application/json');
-
-    getStationDetails(req.params.crs, (data) => {
-        let _departure = data.GetStationBoardResult.trainServices.service[0];
-        res.json(_departure)
-    }, (err) => res.json(err));
-});
+// app.get('/train-station/station/next-departure/:crs', ...
 
 app.get('/train-station/search/:crs', (req, res) => {
     console.log("search -> ", req.params.crs);

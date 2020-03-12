@@ -49,7 +49,7 @@ class App extends React.Component {
                         <Route exact path="/" component={Home} />
                         <Route path="/search/:query" component={ (props) => (<Search {...props} />) } />
                         <Route exact path="/search/" component={ (props) => (<Search {...props} />) } />
-                        <Route path="/:stationCrs([A-Z]{3})" component={ (props) => (
+                        <Route path="/:crs([A-Z]{3})" component={ (props) => (
                             <ListDepartures { ...props } />
                         )} />
 

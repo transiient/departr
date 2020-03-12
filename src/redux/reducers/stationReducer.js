@@ -1,16 +1,24 @@
 import { 
     UPDATE_STATION_DETAILS_STARTED,
     UPDATE_STATION_DETAILS_FAILED,
-    UPDATE_STATION_DETAILS_SUCCEEDED
+    UPDATE_STATION_DETAILS_SUCCEEDED,
+    UPDATE_STATION_SERVICES_STARTED,
+    UPDATE_STATION_SERVICES_FAILED,
+    UPDATE_STATION_SERVICES_SUCCEEDED
 } from '../types';
 
-const initialState = {
+const initialState_stationDetails = {
     isLoading: true,
     error: null,
     station: {}
 }
+const initialState_stationServices = {
+    isLoading: true,
+    error: null,
+    services: {}
+}
 
-export const stationDetailReducer = (state = initialState, action) => {
+export const stationDetailsReducer = (state = initialState_stationDetails, action) => {
     switch (action.type) {
         case UPDATE_STATION_DETAILS_STARTED:
             return {
@@ -21,7 +29,7 @@ export const stationDetailReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isLoading: false,
-                details: action.payload
+                station: action.payload
             }
         case UPDATE_STATION_DETAILS_FAILED:
             return {
@@ -32,4 +40,31 @@ export const stationDetailReducer = (state = initialState, action) => {
         default:
             return state;
     }
-};
+}
+export const stationServicesReducer = (state = initialState_stationServices, action) => {
+    switch (action.type) {
+        case UPDATE_STATION_SERVICES_STARTED:
+            return {
+                ...state,
+                isLoading: true
+            }
+        case UPDATE_STATION_SERVICES_SUCCEEDED:
+            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAA");
+            console.log(action.payload);
+            return {
+                ...state,
+                isLoading: false,
+                services: action.payload
+            }
+        case UPDATE_STATION_SERVICES_FAILED:
+            console.log("THIS FAILED");
+            console.log(action.payload);
+            return {
+                ...state,
+                isLoading: false,
+                error: action.payload
+            }
+        default:
+            return state;
+    }
+}
