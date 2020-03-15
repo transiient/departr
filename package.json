@@ -30,7 +30,8 @@
   },
   "scripts": {
     "serve": "concurrently --kill-others-on-fail \"yarn start\" \"yarn server\"",
-    "server": "nodemon api/index.js",
+    "server": "nodemon",
+    "server-ts": "node --inspect=6660 -r ts-node/register ./api/index.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -38,6 +39,19 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      ".git",
+      "node_modules"
+    ],
+    "watch": [
+      "api"
+    ],
+    "exec": "yarn server-ts",
+    "ext": "js,ts"
   },
   "browserslist": {
     "production": [
@@ -50,5 +64,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/node": "^13.9.1",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
   }
 }

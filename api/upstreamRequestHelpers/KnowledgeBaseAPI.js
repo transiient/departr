@@ -26,7 +26,7 @@ const KB_URL_TIMETABLE = 'https://opendata.nationalrail.co.uk/api/staticfeeds/3.
 const KB_URL_TOCS = 'https://opendata.nationalrail.co.uk/api/staticfeeds/4.0/tocs';
 
 class KnowledgeBaseAPI {
-    constructor(username, password, reloadStationsOnReload) {
+    constructor(username, password) {
         this.authCredentials = {
             username: username,
             password: password,
@@ -54,13 +54,13 @@ class KnowledgeBaseAPI {
                 password: this.authCredentials.password,
             }
         })
-        .then((response) => {
-            this.setAuthToken(response.data.token);
-            return response.data.token;
-        })
-        .catch((error) => {
-            console.error(error);
-        });
+            .then((response) => {
+                this.setAuthToken(response.data.token);
+                return response.data.token;
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
     setAuthToken(token) {
@@ -68,7 +68,7 @@ class KnowledgeBaseAPI {
             dateTime: Date.now(),
             success: true,
             token: token
-        }
+        };
     }
 
     async getAuthToken() {
@@ -76,7 +76,7 @@ class KnowledgeBaseAPI {
 
         if (this.authCredentials.token !== '')
             return this.authCredentials.token;
-        
+
         return this.authenticate;
     }
 
@@ -93,27 +93,26 @@ class KnowledgeBaseAPI {
         });
     }
 
-    // todo: for now, just read directly from the file to get details
-    // I may be able to optimise this later but for now this is the best we'll get
+    // for now, just read directly from the file to get details
     // todo: use a local database for this info
     getStationDetails(crs) {
         return this.readStationDetails()
-        .then(data => {
-            const formattedStations = data.StationList.Station.map((station) => {
-                return {
-                    crs: station["CrsCode"][0],
-                    name: station["Name"][0],
-                    // address: station["Address"][0]["com:PostalAddress"],
-                    location: {
-                        longitude: station["Longitude"][0],
-                        latitude: station["Latitude"][0]
-                    },
-                    staffing: station["Staffing"][0]["StaffingLevel"][0]
-                }
-            });
-            return formattedStations.filter(station => station.crs.toLowerCase()===crs.toLowerCase())[0];
-        })
-        .catch((err) => console.error(err));
+            .then(data => {
+                const formattedStations = data.StationList.Station.map((station) => {
+                    return {
+                        crs: station["CrsCode"][0],
+                        name: station["Name"][0],
+                        // address: station["Address"][0]["com:PostalAddress"],
+                        location: {
+                            longitude: station["Longitude"][0],
+                            latitude: station["Latitude"][0]
+                        },
+                        staffing: station["Staffing"][0]["StaffingLevel"][0]
+                    };
+                });
+                return formattedStations.filter(station => station.crs.toLowerCase() === crs.toLowerCase())[0];
+            })
+            .catch((err) => console.error(err));
     }
 }
 
