@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PT from 'prop-types';
 import classnames from 'classnames';
+import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 
 import cn from './Service.module.scss';
 
@@ -40,7 +41,7 @@ function TimesPanel(props) {
 function ButtonJourneyMap(props) {
     return (
         <div className={cn.button + ' ' + cn.buttonJourneyMap}>
-            <a href="https://google.com/">See Journey Map</a>
+            <button onClick={props.showJourneyMap}>See Journey Map</button>
         </div>
     )
 }
@@ -55,6 +56,24 @@ function CallingPoint(props) {
                 <Link to={"/" + point.station.crs}>{point.station.name}</Link>
             </span>
         </li>
+    )
+}
+
+function JourneyMap(props) {
+    const position = [ props.stationOrigin.location.latitude, props.stationOrigin.location.longitude ];
+
+    return (
+        <Map center={position} zoom={10}>
+            <TileLayer
+                attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker position={position}>
+                <Popup>
+                    {props.stationOrigin.name}
+                </Popup>
+            </Marker>
+        </Map>
     )
 }
 
@@ -94,6 +113,8 @@ class Service extends React.Component {
                     </ol>
 
                     { !service.cancelled && <ButtonJourneyMap service={service} className={cn.gridBottomLeft} /> }
+
+                    <JourneyMap stationOrigin={service.stationOrigin} stationDestination={service.stationDestination} />
                 </div>
             </li>
         );

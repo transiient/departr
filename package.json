@@ -13,6 +13,7 @@
     "fuzzysearch": "^1.0.3",
     "leaflet": "^1.6.0",
     "modern-normalize": "^0.6.0",
+    "mongoose": "^5.9.4",
     "morgan": "^1.9.1",
     "node-sass": "^4.13.0",
     "react": "^16.8.6",
@@ -26,12 +27,15 @@
     "redux-thunk": "^2.3.0",
     "request": "^2.88.0",
     "soap": "^0.29.0",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "xml2js": "^0.4.23"
   },
   "scripts": {
     "serve": "concurrently --kill-others-on-fail \"yarn start\" \"yarn server\"",
-    "server": "nodemon",
+    "server": "yarn server-db&&nodemon",
     "server-ts": "node --inspect=6660 -r ts-node/register ./api/index.js",
+    "server-db": "powershell -Command \"Start-Process -FilePath 'net' -ArgumentList 'start MongoDB' -Verb runAs\"",
+    "populate-db": "yarn server-db&&node ./api/db/populate.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

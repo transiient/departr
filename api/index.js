@@ -7,9 +7,9 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 // Classes
-const KnowledgeBaseAPI = require('./upstreamRequestHelpers/KnowledgeBaseAPI');
 const LdbwsAPI = require('./upstreamRequestHelpers/LdbwsAPI');
-const { Station } = require('./classes/Station');
+const NominatimAPI = require('./upstreamRequestHelpers/NominatimAPI').NominatimAPI;
+const Station = require('./classes/Station').Station;
 const { Service, CallingPoint } = require('./classes/Service');
 
 // Data
@@ -29,7 +29,6 @@ if (API_PORT === null || LDBWS_TOKEN === null || ORD_USERNAME === null || ORD_PA
     console.log("   departr API cannot run without these variables set.");
 }
 
-//const kbAPI = new KnowledgeBaseAPI(ORD_USERNAME, ORD_PASSWORD);
 const ldbwsAPI = new LdbwsAPI(LDBWS_TOKEN);
 
 app.use(cors());
@@ -54,6 +53,17 @@ function searchTrainStations(query) {
 
     return new Promise((resolve, reject) => {
         resolve(data);
+    });
+}
+//* Search for the stations closest to a point
+async function findNearbyTrainStations(query) {
+    // todo: search for various types of stations
+    return new Promise((resolve, reject) => {
+        NominatimAPI.getLatLongFromAddressSearch(query)
+            .then((latLong) => {
+                return resolve(Station.findNearest(latLong, 5));
+            })
+            .catch((err) => { return reject(err); });
     });
 }
 
@@ -175,7 +185,7 @@ app.get('/train-station/details/:crs', (req, res) => {
 
     Station.fromCrs(req.params.crs)
         .then(station => res.json(station))
-        .catch(err => console.error(err));
+        .catch(err => { res.status(500).json(err); console.error(err); });
 });
 
 //* Get services for provided CRS
@@ -196,13 +206,25 @@ app.get('/train-station/services/:crs', (req, res) => {
 // app.get('/train-station/station/next-departure/:crs', ...
 
 app.get('/train-station/search/:crs', (req, res) => {
-    console.log("search -> ", req.params.crs);
-
     res.setHeader('Content-Type', 'application/json');
 
     searchTrainStations(req.params.crs)
         .then((data) => res.json(data))
         .catch((err) => { res.status(500).json(err); console.error(err); });
+});
+app.get('/find-stations/:type/:query', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    if (req.params.type !== 'train') res.status(400).json('type must be "train"');
+    findNearbyTrainStations(req.params.query)
+        .then(stations => {
+            res.json(stations.map(station => {
+                return {
+                    distanceMi: station.distanceMi,
+                    ...station.data
+                };
+            }));
+        })
+        .catch((err) => { res.status(500).json(err); });
 });
 
 // Run app
