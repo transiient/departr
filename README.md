@@ -1,22 +1,28 @@
-# departr - Train Tracker
+# departr - Train Times
 
-I was sick of trying to find a page with *just train times*, so I made departr.
+departr allows you to search for train stations and view their departures.
 
-departr allows you to search for train stations and view departures.
+There are plans for enhancement of the service, including favourite journeys, timetable synchronisation, notifications, and more. See **Future Goals** below for more information.
+
+departr is looking for contributors. `git clone` and start hacking!
 
 ## Prerequisites
 
-1. Register for an OpenLDBWS token [here](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration/)
-2. Copy `/example.env` to `/.env` and insert the following:
-    * The token you just received
-    * The latest URL of the OpenLDBWS API (available [here](https://lite.realtime.nationalrail.co.uk/openldbws/))
-3. Run `yarn` to install dependencies
+**Currently, departr will only run on Windows.** UNIX support is planned, but currently not a priority.
 
-The API requires a MongoDB instance to function. *`mongod` must exist in `PATH`.* Why is MongoDB required? Some of the data used by departr comes from the NRE API in a gigantic 30MB XML file, which then has to be parsed to JSON. Luckily, this file rarely needs updating, so database entries can be static.
+To run departr yourself...
 
-**The database must be populated before the server is first started.** To do this, run `yarn populate-db`. A *gigantic* file will be downloaded every time the database is populated. This means that population *will take a very, very long time*, and use a lot of network bandwidth. For this reason, **you should avoid populating on a metered connection.** The MongoDB instance will be started alongside the server when using the `yarn server` command.
+1. Register with OpenLDBWS and get an authentication token [here](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration/)
+2. Register with the NRE Open Rail Data service
+    * Instructions to be added
+3. Create `/.env` from `/example.env` and add credentials
+4. Add `mongod` from MongoDB installation to `PATH` and install it as a system service (departr launches it automatically)
+5. Run `yarn populate-db`
+6. Run `yarn serve` to start both the API and the React app concurrently
 
-The database schemas can be viewed in `/api/db/schemas`.
+**The API requires a MongoDB instance to function.** *`mongod` should exist in `PATH` in case of future changes.* departr requires this because some of the data used by departr comes from the NRE API in a gigantic 30MB XML file, which then has to be parsed to JSON. Luckily, this file rarely needs updating, so database entries can be static. In the future, user accounts will be stored in this database too.
+
+**The database must be populated before the server is first started.** To do this, run `yarn populate-db`. A 30MB file will be downloaded every time the database is populated. This means that population *will take a very, very long time*, because the NRE server is incredibly slow, and it will use a lot of network bandwidth. For this reason, **avoid populating the database on a metered connection.**
 
 ## Run
 
@@ -30,19 +36,16 @@ Run one of the following to serve the site and/or proxy server:
 
 * Fully responsive front-end
 * Remain simple and easy-to-use
-* Back-end API which combines current times with timetables
-    * Implements caching to minimise server requests and speed up responses
-* PWA with departure notifications (bell button beside entries on departure list)
-* *?* Accounts with the option to save regularly-timetabled journies
-    * Email notifications with travel updates
 
 ### Future Goals
 
-* Integrate a plan for monetisation
+* Create a plan for monetisation, such as premium features/API
+* Allow public access to API with authentication middleware
+* Cache station results for up to 30 seconds
 * Combine realtime expected times with timetabled times for future results
-    * Enable tracking of specific services with notifications on PWA
-* Integrate bus, cycle, and coach tracking services
-    * Link these with trains for connecting services
+* Allow a user to make an account and save favourite stations/services/routes
+* Enable tracking of specific services with notifications on PWA
+* Integrate bus, cycle, and coach tracking services, with connections to train services for full journey planning
 
 ## Licence
 
