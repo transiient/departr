@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { PTService } from '../types/Service';
 import classnames from 'classnames';
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
+import { Map, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 
 import cn from './Service.module.scss';
 
@@ -41,7 +41,10 @@ function TimesPanel(props) {
 function ButtonJourneyMap(props) {
     return (
         <div className={cn.button + ' ' + cn.buttonJourneyMap}>
-            <button onClick={props.showJourneyMap}>See Journey Map</button>
+            {!props.showJourneyMap &&
+                <button onClick={props.handleClick}>Show Journey Map</button>}
+            {props.showJourneyMap &&
+                <button onClick={props.handleClick}>Show Stops</button>}
         </div>
     );
 }
@@ -60,24 +63,53 @@ function CallingPoint(props) {
 }
 
 function JourneyMap(props) {
-    const position = [props.stationOrigin.location.latitude, props.stationOrigin.location.longitude];
+    // todo: pass down current station and use those values for default
+    const mapDefaultPosition = [
+        parseFloat(props.stationOrigin.location.latitude),
+        parseFloat(props.stationOrigin.location.longitude)
+    ];
+    const newCallingPoints = props.callingPoints.slice();
+    newCallingPoints.unshift({ station: props.stationOrigin });
+    newCallingPoints.push({ station: props.stationDestination });
+    const mapPolylinePositions = newCallingPoints.map((callingPoint) => {
+        return [
+            parseFloat(callingPoint.station.location.latitude),
+            parseFloat(callingPoint.station.location.longitude)
+        ];
+    });
 
+    // todo(ts migration): ignore center, position errors until migrated to typescript
     return (
-        <Map center={position} zoom={10}>
+        <Map center={mapDefaultPosition} zoom={10} className={cn.journeyMap}>
             <TileLayer
-                attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                attribution='&amp;copy <a href="http://osm.org/copyright">OSM</a>'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={position}>
+            <Marker position={mapDefaultPosition}>
                 <Popup>
                     {props.stationOrigin.name}
                 </Popup>
             </Marker>
+            <Polyline positions={mapPolylinePositions} />
         </Map>
     );
 }
 
 class Service extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            showJourneyMap: false
+        };
+
+        this.handleShowJourneyMapClick = this.handleShowJourneyMapClick.bind(this);
+    }
+
+    handleShowJourneyMapClick(e) {
+        this.setState({ showJourneyMap: !this.state.showJourneyMap });
+    }
+
     render() {
         let {
             service
@@ -106,15 +138,27 @@ class Service extends React.Component {
                         </a>
                     </div>
 
-                    <ol className={classnames(cn.callingPoints, cn.gridBottomMiddle)}>
-                        {service.callingPoints.map((point, index) => {
-                            return (<CallingPoint key={index} data={point} />);
-                        })}
-                    </ol>
+                    {!this.state.showJourneyMap &&
+                        <ol className={classnames(cn.callingPoints, cn.gridBottomMiddle)}>
+                            {service.callingPoints.map((point, index) => {
+                                return (<CallingPoint key={index} data={point} />);
+                            })}
+                        </ol>}
 
-                    {!service.cancelled && <ButtonJourneyMap service={service} className={cn.gridBottomLeft} />}
+                    {!service.cancelled &&
+                        <ButtonJourneyMap
+                            handleClick={this.handleShowJourneyMapClick}
+                            service={service}
+                            showJourneyMap={this.state.showJourneyMap}
+                            className={cn.gridBottomLeft} />}
 
-                    <JourneyMap stationOrigin={service.stationOrigin} stationDestination={service.stationDestination} />
+                    {this.state.showJourneyMap &&
+                        <div className={classnames(cn.journeyMapContainer, cn.gridBottomMiddle)}>
+                            <JourneyMap
+                                stationOrigin={service.stationOrigin}
+                                stationDestination={service.stationDestination}
+                                callingPoints={service.callingPoints} />
+                        </div>}
                 </div>
             </li>
         );
