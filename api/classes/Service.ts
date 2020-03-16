@@ -1,3 +1,5 @@
+import { Station } from './Station';
+
 interface ServiceOperator {
     name: string;
     code: string;
@@ -64,7 +66,7 @@ class Service {
     }
 }
 
-module.exports = {
+export {
     Service,
     CallingPoint
-};
+}

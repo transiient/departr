@@ -3,7 +3,7 @@ import PT from 'prop-types';
 import classnames from 'classnames';
 
 import Service from './Service';
-import { PTService } from './Service';
+import { PTService } from '../types/Service';
 
 // todo: move into Service.js as List component
 class Times extends React.Component {
@@ -13,8 +13,8 @@ class Times extends React.Component {
         return (
             <div className={classnames("times", this.props.classNames)}>
                 <ol>
-                    { services.map((service, index) => (
-                        <Service key={ index } index={ index } service={ service } />
+                    {services.map((service, index) => (
+                        <Service key={index} index={index} service={service} />
                     ))}
                 </ol>
             </div>
@@ -25,6 +25,6 @@ class Times extends React.Component {
 // todo: expand "object"
 Times.propTypes = {
     services: PT.arrayOf(PTService.isRequired).isRequired
-}
+};
 
 export default Times;

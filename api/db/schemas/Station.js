@@ -11,6 +11,16 @@ const StationSchema = new Schema({
     staffing: String
 });
 
+StationSchema.index({
+    'crs': 'text',
+    'name': 'text'
+}, {
+    weights: {
+        crs: 1,
+        name: 2
+    }
+});
+
 const StationModel = mongoose.model('Station', StationSchema);
 
 module.exports = {

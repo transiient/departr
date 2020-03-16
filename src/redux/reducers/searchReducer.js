@@ -18,22 +18,22 @@ export const searchReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isLoading: true
-            }
+            };
         case SEARCH_STATION_SUCCEEDED:
             return {
                 ...state,
                 isLoading: false,
                 query: action.payload.query,
                 results: action.payload.results
-            }
+            };
         case SEARCH_STATION_FAILED:
             return {
                 ...state,
                 isLoading: false,
                 query: action.payload.query,
                 error: action.payload.error
-            }
+            };
         default:
             return state;
     }
-}
+};

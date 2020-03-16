@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const StationFactory = require('../db/schemas/Station.factory');
-const NominatimAPI = require('../upstreamRequestHelpers/NominatimAPI').NominatimAPI;
 
 class departrDBAPI {
     constructor(DB_URL, DB_NAME) {
@@ -15,6 +14,11 @@ class departrDBAPI {
 
         db.on('error', err => console.error(err));
         db.on('open', () => this.dbOpen = true);
+    }
+
+    searchStations(query) {
+        return StationFactory.searchStations(query)
+            .catch((err) => console.error(err));
     }
 
     getStationDetails(crs) {

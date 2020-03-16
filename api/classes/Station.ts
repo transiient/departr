@@ -29,9 +29,17 @@ class Station {
         this.staffing = staffing;
     }
 
+    static async existsFromCrs(crs: string) {
+        return new Promise((resolve, reject) => {
+            return departrDB.getStationDetails(crs)
+                .then((d: any) => { return resolve(d); })
+                .catch((e: any) => { return reject(e); })
+        });
+    }
+
     static async fromCrs(crs: string) {
         return departrDB.getStationDetails(crs)
-            .then((station) => {
+            .then((station: any) => {
                 return new Station(
                     station.crs,
                     station.name,
@@ -39,10 +47,14 @@ class Station {
                     station.staffing
                 );
             })
-            .catch((err) => {
+            .catch((err: any) => {
                 console.error(err);
                 return err;
             });
+    }
+
+    static async search(query: string) {
+        return departrDB.searchStations(query);
     }
 
     static async findNearest(location: LatLong, count: number) {
@@ -50,15 +62,15 @@ class Station {
         const locLon = parseFloat(location.longitude);
 
         return departrDB.getAllStationDetails()
-            .then((stations) => {
-                return stations.map(el => {
+            .then((stations: any) => {
+                return stations.map((el: any) => {
                     el = el.toObject();
                     const elLat = parseFloat(el.location.latitude);
                     const elLon = parseFloat(el.location.longitude);
 
                     // todo: move to separate helper functions file
                     function getDistanceBetweenLatLong(a: LatLongNum, b: LatLongNum) {
-                        function deg2rad(deg) { return deg * (Math.PI / 180); }
+                        function deg2rad(deg: number) { return deg * (Math.PI / 180); }
                         const R_KM = 6371;
                         const radLat = deg2rad(b.latitude - a.latitude);
                         const radLon = deg2rad(b.longitude - a.longitude);
@@ -78,14 +90,14 @@ class Station {
                     return { distanceMi, data: el };
                 });
             })
-            .then((stationsWithDistance) => {
-                stationsWithDistance.sort((a, b) => {
+            .then((stationsWithDistance: any) => {
+                stationsWithDistance.sort((a: any, b: any) => {
                     return a.distanceMi - b.distanceMi;
                 });
 
                 return stationsWithDistance;
             })
-            .then((stationsWithDistance) => {
+            .then((stationsWithDistance: any) => {
                 //* returns: { distanceMi, data }
                 return stationsWithDistance.slice(0, count);
             })
@@ -113,6 +125,6 @@ class Station {
     }
 }
 
-module.exports = {
+export {
     Station
-};
+}

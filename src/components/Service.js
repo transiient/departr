@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PT from 'prop-types';
+import { PTService } from '../types/Service';
 import classnames from 'classnames';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 
@@ -17,7 +17,7 @@ function TimesPanel(props) {
                 <div className={classnames("labelUppercaseSmall", cn.timeLabel)}>On time</div>
                 <div className={classnames("textLarge", cn.time)}>{service.time.expected}</div>
             </div>
-        )
+        );
     }
     else if (service.cancelled) { // Cancelled
         return (
@@ -25,7 +25,7 @@ function TimesPanel(props) {
                 <div className={classnames("labelUppercaseSmall", cn.timeLabel)}>Cancelled</div>
                 <div className={classnames("textLarge", cn.time)}>{service.time.scheduled}</div>
             </div>
-        )
+        );
     }
     else { // Delayed
         return (
@@ -34,7 +34,7 @@ function TimesPanel(props) {
                 <div className={classnames("labelUppercaseSmall", cn.timeLabel)}>expected</div>
                 <div className={classnames("textLarge", cn.time, cn.timeDelayExpected)}>{service.time.expected}</div>
             </div>
-        )
+        );
     }
 }
 
@@ -43,7 +43,7 @@ function ButtonJourneyMap(props) {
         <div className={cn.button + ' ' + cn.buttonJourneyMap}>
             <button onClick={props.showJourneyMap}>See Journey Map</button>
         </div>
-    )
+    );
 }
 
 function CallingPoint(props) {
@@ -56,11 +56,11 @@ function CallingPoint(props) {
                 <Link to={"/" + point.station.crs}>{point.station.name}</Link>
             </span>
         </li>
-    )
+    );
 }
 
 function JourneyMap(props) {
-    const position = [ props.stationOrigin.location.latitude, props.stationOrigin.location.longitude ];
+    const position = [props.stationOrigin.location.latitude, props.stationOrigin.location.longitude];
 
     return (
         <Map center={position} zoom={10}>
@@ -74,7 +74,7 @@ function JourneyMap(props) {
                 </Popup>
             </Marker>
         </Map>
-    )
+    );
 }
 
 class Service extends React.Component {
@@ -108,11 +108,11 @@ class Service extends React.Component {
 
                     <ol className={classnames(cn.callingPoints, cn.gridBottomMiddle)}>
                         {service.callingPoints.map((point, index) => {
-                            return ( <CallingPoint key={index} data={point} /> )
+                            return (<CallingPoint key={index} data={point} />);
                         })}
                     </ol>
 
-                    { !service.cancelled && <ButtonJourneyMap service={service} className={cn.gridBottomLeft} /> }
+                    {!service.cancelled && <ButtonJourneyMap service={service} className={cn.gridBottomLeft} />}
 
                     <JourneyMap stationOrigin={service.stationOrigin} stationDestination={service.stationDestination} />
                 </div>
@@ -122,46 +122,9 @@ class Service extends React.Component {
 }
 
 //todo: PLEASE, for the love of god, REFACTOR THIS SOMEHOW
-export let PTService = PT.exact({
-    serviceType: PT.string.isRequired,
-    serviceID: PT.string.isRequired,
-    rsid: PT.string.isRequired,
-    operator: PT.exact({
-        name: PT.string.isRequired,
-        code: PT.string.isRequired,
-        homepageUrl: PT.string.isRequired
-    }).isRequired,
-    stationOrigin: PT.exact({
-        name: PT.string.isRequired,
-        crs: PT.string.isRequired
-    }).isRequired,
-    stationDestination: PT.exact({
-        name: PT.string.isRequired,
-        crs: PT.string.isRequired
-    }).isRequired,
-    cancelled: PT.bool.isRequired,
-    time: PT.exact({
-        scheduled: PT.string.isRequired,
-        expected: PT.string.isRequired,
-        onTime: PT.bool.isRequired
-    }).isRequired,
-    callingPoints: PT.arrayOf(PT.exact({
-        station: PT.exact({
-            name: PT.string.isRequired,
-            crs: PT.string.isRequired
-        }).isRequired,
-        cancelled: PT.bool.isRequired,
-        time: PT.exact({
-            scheduled: PT.string.isRequired,
-            expected: PT.string.isRequired,
-            onTime: PT.bool.isRequired
-        }).isRequired
-    }).isRequired).isRequired,
-    direct: PT.bool.isRequired
-});
 
 Service.propTypes = {
     service: PTService.isRequired
-}
+};
 
 export default Service;

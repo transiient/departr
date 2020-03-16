@@ -6,7 +6,7 @@ function getStationFromCrs(crs) {
         let query = Station.findOne({ crs: crs });
         query.exec((err, data) => {
             if (err) return reject(err);
-            resolve(data);
+            return resolve(data);
         });
     });
 }
@@ -16,7 +16,19 @@ function getAllStations() {
         let query = Station.find({});
         query.exec((err, data) => {
             if (err) return reject(err);
-            resolve(data);
+            return resolve(data);
+        });
+    });
+}
+
+function searchStations(query) {
+    return new Promise((resolve, reject) => {
+        let mongooseQuery = Station.find({
+            $text: { $search: query }
+        });
+        mongooseQuery.exec((err, data) => {
+            if (err) return reject(err);
+            return resolve(data);
         });
     });
 }
@@ -40,5 +52,6 @@ function addStation(station) {
 module.exports = {
     getStationFromCrs,
     getAllStations,
+    searchStations,
     addStation
 };

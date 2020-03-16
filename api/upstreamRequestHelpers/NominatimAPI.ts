@@ -12,7 +12,7 @@ class NominatimAPI {
                     'format': 'json'
                 }
             })
-                .then((response) => {
+                .then((response: any) => {
                     if (response.data.length === 0)
                         return reject({ message: 'No results' });
                     const data = response.data[0];
@@ -21,11 +21,11 @@ class NominatimAPI {
                         longitude: data.lon
                     });
                 })
-                .catch(err => reject(err));
+                .catch((err: any) => reject(err));
         });
     }
 }
 
-module.exports = {
+export {
     NominatimAPI
 }
