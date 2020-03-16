@@ -1,6 +1,12 @@
+import express, { Request as Req, Response as Res } from 'express';
+
+import { NominatimAPI } from './upstreamRequestHelpers/NominatimAPI';
+import { Station } from './classes/Station';
+import { Service, CallingPoint } from './classes/Service';
+
 require('dotenv').config();
 const uniq = require('lodash/uniq');
-const express = require('express');
+// const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -8,9 +14,6 @@ const morgan = require('morgan');
 
 // Classes
 const LdbwsAPI = require('./upstreamRequestHelpers/LdbwsAPI');
-const NominatimAPI = require('./upstreamRequestHelpers/NominatimAPI').NominatimAPI;
-const Station = require('./classes/Station').Station;
-const { Service, CallingPoint } = require('./classes/Service');
 
 // Data
 const StationCodes = require('../src/data/station_codes.json');
@@ -40,27 +43,30 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /* Static methods */
 /* ************** */
 //* Check if the provided CRS value actually exists
-function isStationCrsValid(crs) {
-    return StationCodes.filter((station) => station.crs === crs);
+function isStationCrsValid(crs: string) {
+    // return Station.existsFromCrs(crs)
+    return StationCodes.filter((station: any) => station.crs === crs);
 }
 //* Search stations
-function searchTrainStations(query) {
-    let _matchCrs = (StationCodes.filter((station) => (station["CRS Code"]).toLowerCase() === query.toLowerCase()));
-    let _similar = (StationCodes.filter((station) => ((station["CRS Code"] + station["Station Name"]).toLowerCase().includes(query.toLowerCase()))));
-    let data = uniq([..._matchCrs, ..._similar]).map((station) => {
-        return new Station(station["CRS Code"]);
-    });
-
-    return new Promise((resolve, reject) => {
-        resolve(data);
-    });
+function searchTrainStations(query: string) {
+    return Station.search(query)
+        .then((results) => {
+            return results.map((result: any) => {
+                return new Station(
+                    result.crs,
+                    result.name,
+                    result.location,
+                    result.staffing
+                );
+            });
+        })
 }
 //* Search for the stations closest to a point
-async function findNearbyTrainStations(query) {
+async function findNearbyTrainStations(query: string) {
     // todo: search for various types of stations
     return new Promise((resolve, reject) => {
         NominatimAPI.getLatLongFromAddressSearch(query)
-            .then((latLong) => {
+            .then((latLong: any) => {
                 return resolve(Station.findNearest(latLong, 5));
             })
             .catch((err) => { return reject(err); });
@@ -68,14 +74,14 @@ async function findNearbyTrainStations(query) {
 }
 
 //* Check if the train is running on time
-function isOnTime(scheduled, expected) {
+function isOnTime(scheduled: string, expected: string) {
     //? NRE could return various values for the expected time.
     if (expected.toLowerCase() === "on time") return true;
     if (expected === scheduled) return true;
     return false;
 }
 //* Get the true expected time of the train, whether on time or not
-function getExpectedTime(scheduled, expected) {
+function getExpectedTime(scheduled: string, expected: string) {
     const onTime = (expected.toLowerCase() === "on time") || (expected === scheduled);
     const cancelled = (expected.toLowerCase() === "cancelled");
     const delayUnknown = (expected.toLowerCase() === "delayed");
@@ -86,8 +92,8 @@ function getExpectedTime(scheduled, expected) {
     else return expected;
 }
 //* Get the train operator's website URL
-function getOperatorHomepageUrl(operatorCode) {
-    const matchingToc = TrainOperatingCompanies.filter((operator) => operator.code === operatorCode);
+function getOperatorHomepageUrl(operatorCode: string) {
+    const matchingToc = TrainOperatingCompanies.filter((operator: any) => operator.code === operatorCode);
 
     // todo: update to use KB API
     if (matchingToc.length > 0)
@@ -99,7 +105,7 @@ function getOperatorHomepageUrl(operatorCode) {
 /* Formatters */
 /* ********** */
 //* Returns a Promise resolving to an array of callingPoints
-async function formatCallingPoints(callingPoint) {
+async function formatCallingPoints(callingPoint: any) {
     //? NRE sometimes returns no calling points
     let callingPoints = [];
 
@@ -112,7 +118,7 @@ async function formatCallingPoints(callingPoint) {
 
     //? callingPoints.map returns an array of Promises.
     //? The result of these promises (an Promise resolving to an array of callingPoints) is then returned.
-    return await Promise.all(callingPoints.map((callingPoint) => {
+    return await Promise.all(callingPoints.map((callingPoint: any) => {
         if (!callingPoint.et)
             callingPoint.et = (callingPoint.at || '');
 
@@ -134,8 +140,8 @@ async function formatCallingPoints(callingPoint) {
     }));
 }
 
-async function formatServices(services) {
-    return await Promise.all(services.map(service => {
+async function formatServices(services: any) {
+    return await Promise.all(services.map((service: any) => {
         //? ...callingPointList.callingPoint sometimes doesn't exist.
         let callingPointsUnformatted = [];
         if (!service.subsequentCallingPoints || !service.subsequentCallingPoints.callingPointList || !service.subsequentCallingPoints.callingPointList.callingPoint)
@@ -144,7 +150,7 @@ async function formatServices(services) {
             callingPointsUnformatted = service.subsequentCallingPoints.callingPointList.callingPoint;
 
         return formatCallingPoints(callingPointsUnformatted)
-            .then((callingPoints) => {
+            .then((callingPoints: any) => {
                 return new Promise(async (resolve, reject) => {
                     resolve(new Service(
                         service.serviceType,
@@ -175,12 +181,12 @@ async function formatServices(services) {
 /*
     Hello world
 */
-app.get('/', (req, res) => {
+app.get('/', (req: Req, res: Res) => {
     res.send("departr API - try /train-station/details/CLJ - documentation coming soon");
 });
 
 //* Get details for provided CRS
-app.get('/train-station/details/:crs', (req, res) => {
+app.get('/train-station/details/:crs', (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
 
     Station.fromCrs(req.params.crs)
@@ -189,7 +195,7 @@ app.get('/train-station/details/:crs', (req, res) => {
 });
 
 //* Get services for provided CRS
-app.get('/train-station/services/:crs', (req, res) => {
+app.get('/train-station/services/:crs', (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
 
     if (!isStationCrsValid) {
@@ -198,26 +204,26 @@ app.get('/train-station/services/:crs', (req, res) => {
     }
 
     ldbwsAPI.getDepartureBoard(req.params.crs)
-        .then(board => { return formatServices(board.trainServices.service); })
-        .then(services => { res.json(services); })
-        .catch(err => { res.status(500).json(err); console.error(err); });
+        .then((board: any) => { return formatServices(board.trainServices.service); })
+        .then((services: any) => { res.json(services); })
+        .catch((err: any) => { res.status(500).json(err); console.error(err); });
 });
 
 // app.get('/train-station/station/next-departure/:crs', ...
 
-app.get('/train-station/search/:crs', (req, res) => {
+app.get('/train-station/search/:crs', (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
 
     searchTrainStations(req.params.crs)
-        .then((data) => res.json(data))
-        .catch((err) => { res.status(500).json(err); console.error(err); });
+        .then((data: any) => res.json(data))
+        .catch((err: any) => { res.status(500).json(err); console.error(err); });
 });
-app.get('/find-stations/:type/:query', (req, res) => {
+app.get('/find-stations/:type/:query', (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
     if (req.params.type !== 'train') res.status(400).json('type must be "train"');
     findNearbyTrainStations(req.params.query)
-        .then(stations => {
-            res.json(stations.map(station => {
+        .then((stations: any) => {
+            res.json(stations.map((station: any) => {
                 return {
                     distanceMi: station.distanceMi,
                     ...station.data
@@ -229,5 +235,5 @@ app.get('/find-stations/:type/:query', (req, res) => {
 
 // Run app
 app.listen(API_PORT, () => {
-    console.log("\n\n\t>> API is running on port [" + API_PORT + "]");
+    console.log("\n\n\t>> API is running on port [" + API_PORT + "]\n");
 });

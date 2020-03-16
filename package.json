@@ -33,10 +33,10 @@
   "scripts": {
     "serve": "concurrently --kill-others-on-fail \"yarn start\" \"yarn server\"",
     "server": "yarn server-db&&nodemon",
-    "server-ts": "node --inspect=6660 -r ts-node/register ./api/index.js",
+    "server-ts": "SET TS_NODE_PROJECT=./api/tsconfig.json&&node --inspect=6660 -r ts-node/register ./api/index",
     "server-db": "powershell -Command \"Start-Process -FilePath 'net' -ArgumentList 'start MongoDB' -Verb runAs\"",
     "populate-db": "yarn server-db&&node ./api/db/populate.js",
-    "start": "react-scripts start",
+    "start": "SET TS_NODE_PROJECT=./&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -70,6 +70,7 @@
     ]
   },
   "devDependencies": {
+    "@types/express": "^4.17.3",
     "@types/node": "^13.9.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.3"
