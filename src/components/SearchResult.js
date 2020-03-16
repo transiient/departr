@@ -11,7 +11,7 @@ class SearchResult extends Component {
 
         return (
             <li className={cn.result}>
-                <Link className={cn.station} to={"/" + station.crs} >
+                <Link className={cn.station} to={"/train/" + station.crs} >
                     <div className={cn.badge}>
                         <span className={cn.mode}><i className="material-icons">train</i></span>
                         <span className={cn.crs}>{station.crs}</span>

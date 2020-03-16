@@ -47,14 +47,14 @@ class App extends React.Component {
 
                     <Switch>
                         <Route exact path="/" component={Home} />
-                        <Route path="/search/:query" component={ (props) => (<Search {...props} />) } />
-                        <Route exact path="/search/" component={ (props) => (<Search {...props} />) } />
-                        <Route path="/:crs([A-Z]{3})" component={ (props) => (
-                            <ListDepartures { ...props } />
-                        )} />
+                        <Route path="/search/:query" component={(props) => (<Search {...props} />)} />
+                        <Route exact path="/search/" component={(props) => (<Search {...props} />)} />
+                        <Route path="/train/:crs([A-Z]{3})" component={(props) => {
+                            return (<ListDepartures {...props} />);
+                        }} />
 
-                        <Route path="/error/:errorID" component={ (props) => (<Error {...props} />) } />
-                        <Route path="*" component={ (props) => (<Error errorID={"404"} {...props} />) } />
+                        <Route path="/error/:errorID" component={(props) => (<Error {...props} />)} />
+                        <Route path="*" component={(props) => (<Error errorID={"404"} {...props} />)} />
                     </Switch>
 
                     <Footer />

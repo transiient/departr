@@ -56,7 +56,7 @@ function CallingPoint(props) {
         <li className={cn.callingPointWrapper}>
             <span className={classnames("textLarge", cn.callingPointTime)}>{point.time.expected}</span>
             <span className={cn.callingPointStation}>
-                <Link to={"/" + point.station.crs}>{point.station.name}</Link>
+                <Link to={"/train/" + point.station.crs}>{point.station.name}</Link>
             </span>
         </li>
     );
@@ -124,9 +124,9 @@ class Service extends React.Component {
 
                     <div className={classnames(cn.fromTo, cn.gridTopMiddle)}>
                         <span className={classnames("labelUppercaseSmall", cn.labelTiny, cn.fromToTo)}>To</span>
-                        <Link className={classnames(cn.destination)} to={service.stationDestination.crs}>{service.stationDestination.name}</Link>
+                        <Link className={classnames(cn.destination)} to={"/train/" + service.stationDestination.crs}>{service.stationDestination.name}</Link>
                         <span className={classnames("labelUppercaseSmall", cn.labelTiny, cn.fromToFrom)}>from</span>
-                        <Link className={classnames(cn.origin)} to={service.stationOrigin.crs}>{service.stationOrigin.name}</Link>
+                        <Link className={classnames(cn.origin)} to={"/train/" + service.stationOrigin.crs}>{service.stationOrigin.name}</Link>
                     </div>
 
                     <div className={classnames(cn.operatorPanel, cn.gridTopRight)}>
