@@ -60,8 +60,7 @@ db.on('open', async () => {
 
     console.log("\tPopulating stations\n\tThis will take a VERY LONG TIME. departr recommends a coffee while you wait.");
     try {
-        const dbResult = await populateStations();
-        console.log(dbResult);
+        await populateStations();
         console.log("\tDone!");
     } catch (err) {
         console.error("**\tAn error occurred and the database likely wasn't populated.");
