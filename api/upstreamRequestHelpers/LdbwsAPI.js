@@ -1,23 +1,26 @@
 const axios = require('axios').default;
 const soap = require('soap');
 
-// Latest URL from: https://lite.realtime.nationalrail.co.uk/openldbws/
+// URL from: https://lite.realtime.nationalrail.co.uk/openldbws/
+//? Remain on this URL until a refactor - departr works based on this schema
 const LDBWS_URL = 'https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01';
 
 class LdbwsAPI {
     constructor(token) {
         this.authCredentials = {
             token: token
-        }
+        };
     }
 
     getDepartureBoard(crs) {
         const soapHeader = { "tok:AccessToken": { "tok:TokenValue": this.authCredentials.token } };
-    
-        const wsdlOptions = { "overrideRootElement": {
-            "namespace": "mns",
-            "xmlnsAttributes": [{ "name": "xmlns:mns", "value": "http://thalesgroup.com/RTTI/2017-10-01/ldb/" }]
-        } };
+
+        const wsdlOptions = {
+            "overrideRootElement": {
+                "namespace": "mns",
+                "xmlnsAttributes": [{ "name": "xmlns:mns", "value": "http://thalesgroup.com/RTTI/2017-10-01/ldb/" }]
+            }
+        };
         const args = {
             "mns:numRows": 10, // Number of services to return. [1 - 10]
             "mns:crs": crs, // CRS of queried station.
@@ -26,23 +29,23 @@ class LdbwsAPI {
             "mns:timeOffset": 0, // Offset against current time. [-120 - 120]
             "mns:timeWindow": 120 // How far to provide times for in minutes [-120 - 120]
         };
-    
+
         return soap.createClientAsync(LDBWS_URL, wsdlOptions)
-        .then((client) => {
-            client.addSoapHeader(soapHeader, '', 'tok'); // (header, name (does nothing), namespace)
-            return client.GetDepBoardWithDetailsAsync(args);
-        })
-        .then((result) => {
-            const departureBoard = result[0].GetStationBoardResult;
-    
-            //? sometimes, services doesn't actually exist! For example, try cls: CLP
-            if (!departureBoard.trainServices)
-                departureBoard.trainServices = { service: [] };
-    
-            return departureBoard;
-        })
-        // todo: error handling 
-        .catch((error) => console.error(error));
+            .then((client) => {
+                client.addSoapHeader(soapHeader, '', 'tok'); // (header, name (does nothing), namespace)
+                return client.GetDepBoardWithDetailsAsync(args);
+            })
+            .then((result) => {
+                const departureBoard = result[0].GetStationBoardResult;
+
+                //? sometimes, services doesn't actually exist! For example, try cls: CLP
+                if (!departureBoard.trainServices)
+                    departureBoard.trainServices = { service: [] };
+
+                return departureBoard;
+            })
+            // todo: error handling 
+            .catch((error) => console.error(error));
     }
 }
 
