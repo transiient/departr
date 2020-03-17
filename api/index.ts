@@ -6,7 +6,6 @@ import { Service, CallingPoint } from './classes/Service';
 
 require('dotenv').config();
 const uniq = require('lodash/uniq');
-// const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
