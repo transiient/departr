@@ -17,18 +17,15 @@ class departrDBAPI {
     }
 
     searchStations(query) {
-        return StationFactory.searchStations(query)
-            .catch((err) => console.error(err));
+        return StationFactory.searchStations(query);
     }
 
     getStationDetails(crs) {
-        return StationFactory.getStationFromCrs(crs)
-            .catch((err) => console.error(err));
+        return StationFactory.getStationFromCrs(crs);
     }
 
     getAllStationDetails() {
-        return StationFactory.getAllStations()
-            .catch((err) => console.error(err));
+        return StationFactory.getAllStations();
     }
 }
 
