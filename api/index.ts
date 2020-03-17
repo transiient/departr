@@ -160,6 +160,7 @@ async function formatServices(services: any) {
                             code: service.operatorCode,
                             homepageUrl: getOperatorHomepageUrl(service.operatorCode)
                         },
+                        // todo: fix the nested awaits
                         await Station.fromCrs(service.origin.location[0].crs),
                         await Station.fromCrs(service.destination.location[0].crs),
                         service.etd.toLowerCase() === "cancelled",
@@ -185,16 +186,20 @@ app.get('/', (req: Req, res: Res) => {
 });
 
 //* Get details for provided CRS
-app.get('/train-station/details/:crs', (req: Req, res: Res) => {
+app.get('/train-station/details/:crs', async (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
 
-    Station.fromCrs(req.params.crs)
-        .then(station => res.json(station))
-        .catch(err => { res.status(500).json(err); console.error(err); });
+    try {
+        const station = await Station.fromCrs(req.params.crs);
+        res.json(station);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json(err.message);
+    }
 });
 
 //* Get services for provided CRS
-app.get('/train-station/services/:crs', (req: Req, res: Res) => {
+app.get('/train-station/services/:crs', async (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
 
     if (!isStationCrsValid) {
@@ -202,34 +207,53 @@ app.get('/train-station/services/:crs', (req: Req, res: Res) => {
         return;
     }
 
-    ldbwsAPI.getDepartureBoard(req.params.crs)
-        .then((board: any) => { return formatServices(board.trainServices.service); })
-        .then((services: any) => { res.json(services); })
-        .catch((err: any) => { res.status(500).json(err); console.error(err); });
+    // todo: consider tidying services in ldbwsapi.ts
+    try {
+        const services = await ldbwsAPI.getDepartures(req.params.crs);
+        const formattedServices = await formatServices(services);
+
+        res.json(formattedServices);
+    } catch (err) {
+        console.error(err.message);
+        if (err.message === 'soap:Server: Unexpected server error') {
+            res.status(404).json('This station likely does not exist');
+        }
+    }
 });
 
 // app.get('/train-station/station/next-departure/:crs', ...
 
-app.get('/train-station/search/:crs', (req: Req, res: Res) => {
+app.get('/train-station/search/:crs', async (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
 
-    searchTrainStations(req.params.crs)
-        .then((data: any) => res.json(data))
-        .catch((err: any) => { res.status(500).json(err); console.error(err); });
+    try {
+        const results = await searchTrainStations(req.params.crs);
+        res.json(results);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json(err.message);
+    }
 });
-app.get('/find-stations/:type/:query', (req: Req, res: Res) => {
+// todo: improve API endpoint naming (this can be addressed in wiki API docs)
+app.get('/find-nearby/:type/:query', async (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
-    if (req.params.type !== 'train') res.status(400).json('type must be "train"');
-    findNearbyTrainStations(req.params.query)
-        .then((stations: any) => {
-            res.json(stations.map((station: any) => {
-                return {
-                    distanceMi: station.distanceMi,
-                    ...station.data
-                };
-            }));
-        })
-        .catch((err) => { res.status(500).json(err); });
+
+    if (req.params.type !== 'train') {
+        res.status(400).json('type must be "train"');
+    }
+
+    try {
+        const nearby: any = await findNearbyTrainStations(req.params.query);
+        nearby.map((station: any) => {
+            return {
+                distanceMi: station.distanceMi,
+                ...station.data
+            };
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json(err.message);
+    }
 });
 
 // Run app

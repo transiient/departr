@@ -1,18 +1,21 @@
-const axios = require('axios').default;
-const soap = require('soap');
+import { createClientAsync as createSoapClient } from 'soap';
 
 // URL from: https://lite.realtime.nationalrail.co.uk/openldbws/
 //? Remain on this URL until a refactor - departr works based on this schema
-const LDBWS_URL = 'https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01';
+const LDBWS_URL: string = 'https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01';
 
 class LdbwsAPI {
-    constructor(token) {
+    authCredentials: {
+        token: string
+    };
+
+    constructor(token: string) {
         this.authCredentials = {
             token: token
         };
     }
 
-    getDepartureBoard(crs) {
+    async getDepartures(crs: string) {
         const soapHeader = { "tok:AccessToken": { "tok:TokenValue": this.authCredentials.token } };
 
         const wsdlOptions = {
@@ -30,22 +33,24 @@ class LdbwsAPI {
             "mns:timeWindow": 120 // How far to provide times for in minutes [-120 - 120]
         };
 
-        return soap.createClientAsync(LDBWS_URL, wsdlOptions)
-            .then((client) => {
-                client.addSoapHeader(soapHeader, '', 'tok'); // (header, name (does nothing), namespace)
-                return client.GetDepBoardWithDetailsAsync(args);
-            })
-            .then((result) => {
-                const departureBoard = result[0].GetStationBoardResult;
+        //todo: tidy stationboardresult in this file
+        try {
+            const soapClient = await createSoapClient(LDBWS_URL, wsdlOptions)
+            soapClient.addSoapHeader(soapHeader, '', 'tok'); // (header, name (does nothing), namespace)
+            const departureBoard = await soapClient.GetDepBoardWithDetailsAsync(args);
 
-                //? sometimes, services doesn't actually exist! For example, try cls: CLP
-                if (!departureBoard.trainServices)
-                    departureBoard.trainServices = { service: [] };
+            //? sometimes, services doesn't actually exist! For example, try cls: CLP
+            let services = { service: [] };
+            if (!departureBoard[0].GetStationBoardResult.trainServices) {
+                services = { service: [] };
+            } else {
+                services = departureBoard[0].GetStationBoardResult.trainServices;
+            }
 
-                return departureBoard;
-            })
-            // todo: error handling 
-            .catch((error) => console.error(error));
+            return services.service;
+        } catch (err) {
+            throw (err);
+        }
     }
 }
 
