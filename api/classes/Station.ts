@@ -76,23 +76,27 @@ class Station {
         const locLat = parseFloat(location.latitude);
         const locLon = parseFloat(location.longitude);
 
-        const allStations = await departrDB.getAllStationDetails();
-        const allStationsWithDistances = allStations.map((el: any) => {
-            //? Convert Mongoose document to JS Object
-            el = el.toObject();
+        try {
+            const allStations = await departrDB.getAllStationDetails();
+            const allStationsWithDistances = allStations.map((el: any) => {
+                //? Convert Mongoose document to JS Object
+                el = el.toObject();
 
-            const elLat = parseFloat(el.location.latitude);
-            const elLon = parseFloat(el.location.longitude);
-            const distanceMi = getDistanceBetweenLatLong(
-                { latitude: locLat, longitude: locLon },
-                { latitude: elLat, longitude: elLon });
+                const elLat = parseFloat(el.location.latitude);
+                const elLon = parseFloat(el.location.longitude);
+                const distanceMi = getDistanceBetweenLatLong(
+                    { latitude: locLat, longitude: locLon },
+                    { latitude: elLat, longitude: elLon });
 
-            return { distanceMi, data: el };
-        });
-        allStationsWithDistances.sort((a: any, b: any) => {
-            return a.distanceMi - b.distanceMi;
-        })
-        return allStationsWithDistances.slice(0, count);
+                return { distanceMi, data: el };
+            });
+            allStationsWithDistances.sort((a: any, b: any) => {
+                return a.distanceMi - b.distanceMi;
+            })
+            return allStationsWithDistances.slice(0, count);
+        } catch (err) {
+            throw (err);
+        }
     }
 
     getRoadDistanceFrom(station: Station) {
