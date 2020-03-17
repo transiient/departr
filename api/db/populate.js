@@ -9,15 +9,15 @@ const KB_URL_AUTH = 'https://opendata.nationalrail.co.uk/authenticate';
 const KB_URL_STATIONS = 'https://opendata.nationalrail.co.uk/api/staticfeeds/4.0/stations';
 
 function tidy(rawData) {
-    return {
-        crs: rawData["CrsCode"][0],
-        name: rawData["Name"][0],
+    return rawData.map((raw) => ({
+        crs: raw["CrsCode"][0],
+        name: raw["Name"][0],
         location: {
-            longitude: rawData["Longitude"][0],
-            latitude: rawData["Latitude"][0]
+            longitude: raw["Longitude"][0],
+            latitude: raw["Latitude"][0]
         },
-        staffing: rawData["Staffing"][0]["StaffingLevel"][0]
-    };
+        staffing: raw["Staffing"][0]["StaffingLevel"][0]
+    }));
 }
 
 async function populateStations() {
@@ -38,7 +38,7 @@ async function populateStations() {
                 'X-Auth-Token': authToken
             }
         }).then((response) => xml2js.parseStringPromise(response.data));
-        const stationsData = stationsDataRaw["StationList"]["Station"].map((raw) => tidy(raw));
+        const stationsData = tidy(stationsDataRaw["StationList"]["Station"]);
         return Promise.all(stationsData.map((station) => StationFactory.addStation(station)));
     } catch (err) {
         console.error(err);
@@ -47,7 +47,12 @@ async function populateStations() {
 }
 
 console.log("Beginning population...");
-mongoose.connect(`mongodb://${process.env.DEPARTRDB_URL}/${process.env.DEPARTRDB_NAME}`, { useNewUrlParser: true });
+mongoose.connect(`mongodb://${process.env.DEPARTRDB_URL}/${process.env.DEPARTRDB_NAME}`, {
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+});
 const db = mongoose.connection;
 db.on('error', err => console.error(err));
 db.on('open', async () => {
@@ -56,6 +61,7 @@ db.on('open', async () => {
     console.log("\tPopulating stations\n\tThis will take a VERY LONG TIME. departr recommends a coffee while you wait.");
     try {
         const dbResult = await populateStations();
+        console.log(dbResult);
         console.log("\tDone!");
     } catch (err) {
         console.error("**\tAn error occurred and the database likely wasn't populated.");
