@@ -78,7 +78,7 @@ class Station {
 
         try {
             const allStations = await departrDB.getAllStationDetails();
-            const allStationsWithDistances = allStations.map((el: any) => {
+            const allStationsWithDistances = await allStations.map((el: any) => {
                 //? Convert Mongoose document to JS Object
                 el = el.toObject();
 
@@ -88,7 +88,10 @@ class Station {
                     { latitude: locLat, longitude: locLon },
                     { latitude: elLat, longitude: elLon });
 
-                return { distanceMi, data: el };
+                return {
+                    distanceMi,
+                    data: el
+                };
             });
             allStationsWithDistances.sort((a: any, b: any) => {
                 return a.distanceMi - b.distanceMi;

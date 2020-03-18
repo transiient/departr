@@ -1,3 +1,6 @@
+console.clear();
+console.log("Launching departr API...\n\n");
+
 import express, { Request as Req, Response as Res } from 'express';
 
 import { NominatimAPI } from './upstreamRequestHelpers/NominatimAPI';
@@ -224,12 +227,12 @@ app.get('/find-nearby/:type/:query', async (req: Req, res: Res) => {
 
     try {
         const nearby: any = await findNearbyTrainStations(req.params.query);
-        nearby.map((station: any) => {
+        res.json(await nearby.map((station: any) => {
             return {
                 distanceMi: station.distanceMi,
                 ...station.data
             };
-        });
+        }));
     } catch (err) {
         console.error(err.message);
         res.status(500).json(err.message);
