@@ -1,1 +1,0 @@
-const APIURL = "https://api.tfl.gov.uk/BikePoint/Search?query=";
