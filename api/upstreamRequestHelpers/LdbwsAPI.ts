@@ -4,6 +4,8 @@ import { createClientAsync as createSoapClient } from 'soap';
 //? Remain on this URL until a refactor - departr works based on this schema
 const LDBWS_URL: string = 'https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01';
 
+interface Service { [key: string]: any };
+
 class LdbwsAPI {
     authCredentials: {
         token: string
@@ -37,17 +39,39 @@ class LdbwsAPI {
         try {
             const soapClient = await createSoapClient(LDBWS_URL, wsdlOptions)
             soapClient.addSoapHeader(soapHeader, '', 'tok'); // (header, name (does nothing), namespace)
-            const departureBoard = await soapClient.GetDepBoardWithDetailsAsync(args);
+            const departureBoardResponse = await soapClient.GetDepBoardWithDetailsAsync(args);
+            const departureBoard = departureBoardResponse[0];
 
-            //? sometimes, services doesn't actually exist! For example, try cls: CLP
-            let services = { service: [] };
-            if (!departureBoard[0].GetStationBoardResult.trainServices) {
-                services = { service: [] };
+            //? services array sometimes doesn't exist
+            let services: Service[];
+            if (!departureBoard.GetStationBoardResult.trainServices || !departureBoard.GetStationBoardResult.trainServices.service) {
+                services = [];
             } else {
-                services = departureBoard[0].GetStationBoardResult.trainServices;
+                services = departureBoard.GetStationBoardResult.trainServices.service;
             }
 
-            return services.service;
+            //? calling points array sometimes doesn't exist
+            const formattedServices = await services.map((service) => {
+                let callingPointsUnformatted = [];
+                if (!service.subsequentCallingPoints || !service.subsequentCallingPoints.callingPointList || !service.subsequentCallingPoints.callingPointList.callingPoint) {
+                    callingPointsUnformatted = [];
+                    try {
+                        delete service.subsequentCallingPoints;
+                    } catch (err) { }
+                } else {
+                    callingPointsUnformatted = service.subsequentCallingPoints.callingPointList.callingPoint;
+                    //? Sometimes, NRE API will return a single object instead of an array of objects
+                    if (!Array.isArray(callingPointsUnformatted))
+                        callingPointsUnformatted = [callingPointsUnformatted];
+                    delete service.subsequentCallingPoints;
+                }
+
+                service.callingPoints = callingPointsUnformatted;
+                // todo: format service/cp in here
+                return service;
+            });
+
+            return formattedServices;
         } catch (err) {
             throw (err);
         }
