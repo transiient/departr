@@ -21,7 +21,6 @@ function tidy(rawData) {
 }
 
 async function populateStations() {
-    // Get ready for chaining HELL
     try {
         const authToken = await axios({
             method: 'post',
@@ -61,7 +60,7 @@ db.on('open', async () => {
     console.log("\tPopulating stations\n\tThis will take a VERY LONG TIME. departr recommends a coffee while you wait.");
     try {
         await populateStations();
-        console.log("\tDone!");
+        console.log("Done!");
     } catch (err) {
         console.error("**\tAn error occurred and the database likely wasn't populated.");
         console.error(err);
