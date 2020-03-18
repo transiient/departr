@@ -11,6 +11,20 @@ interface LatLongNum {
     latitude: number;
 }
 
+function getDistanceBetweenLatLong(a: LatLongNum, b: LatLongNum) {
+    function deg2rad(deg: number) { return deg * (Math.PI / 180); }
+    const R_KM = 6371;
+    const radLat = deg2rad(b.latitude - a.latitude);
+    const radLon = deg2rad(b.longitude - a.longitude);
+    const x =
+        Math.sin(radLat / 2) * Math.sin(radLat / 2) +
+        Math.cos(deg2rad(a.latitude)) * Math.cos(deg2rad(b.latitude)) *
+        Math.sin(radLon / 2) * Math.sin(radLon / 2);
+    const y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+    const z = R_KM * y;
+    return z * 0.62137119;
+}
+
 class Station {
     crs: string;
     name: string;
@@ -29,28 +43,29 @@ class Station {
         this.staffing = staffing;
     }
 
-    static async existsFromCrs(crs: string) {
-        return new Promise((resolve, reject) => {
-            return departrDB.getStationDetails(crs)
-                .then((d: any) => { return resolve(d); })
-                .catch((e: any) => { return reject(e); })
-        });
+    static async fromCrs(crs: string) {
+        try {
+            const station = await departrDB.getStationDetails(crs);
+
+            return new Station(
+                station.crs,
+                station.name,
+                station.location,
+                station.staffing
+            );
+        } catch (err) {
+            throw (err);
+        }
     }
 
-    static async fromCrs(crs: string) {
-        return departrDB.getStationDetails(crs)
-            .then((station: any) => {
-                return new Station(
-                    station.crs,
-                    station.name,
-                    station.location,
-                    station.staffing
-                );
-            })
-            .catch((err: any) => {
-                console.error(err);
-                return err;
-            });
+    // todo: determine if this could be removed and simply replaced by this.fromCrs()
+    static async exists(crs: string) {
+        try {
+            await this.fromCrs(crs);
+            return true;
+        } catch (err) {
+            return false;
+        }
     }
 
     static async search(query: string) {
@@ -61,62 +76,30 @@ class Station {
         const locLat = parseFloat(location.latitude);
         const locLon = parseFloat(location.longitude);
 
-        return departrDB.getAllStationDetails()
-            .then((stations: any) => {
-                return stations.map((el: any) => {
-                    el = el.toObject();
-                    const elLat = parseFloat(el.location.latitude);
-                    const elLon = parseFloat(el.location.longitude);
+        try {
+            const allStations = await departrDB.getAllStationDetails();
+            const allStationsWithDistances = await allStations.map((el: any) => {
+                //? Convert Mongoose document to JS Object
+                el = el.toObject();
 
-                    // todo: move to separate helper functions file
-                    function getDistanceBetweenLatLong(a: LatLongNum, b: LatLongNum) {
-                        function deg2rad(deg: number) { return deg * (Math.PI / 180); }
-                        const R_KM = 6371;
-                        const radLat = deg2rad(b.latitude - a.latitude);
-                        const radLon = deg2rad(b.longitude - a.longitude);
-                        const x =
-                            Math.sin(radLat / 2) * Math.sin(radLat / 2) +
-                            Math.cos(deg2rad(a.latitude)) * Math.cos(deg2rad(b.latitude)) *
-                            Math.sin(radLon / 2) * Math.sin(radLon / 2);
-                        const y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
-                        const z = R_KM * y;
-                        return z * 0.62137119;
-                    }
+                const elLat = parseFloat(el.location.latitude);
+                const elLon = parseFloat(el.location.longitude);
+                const distanceMi = getDistanceBetweenLatLong(
+                    { latitude: locLat, longitude: locLon },
+                    { latitude: elLat, longitude: elLon });
 
-                    let distanceMi = getDistanceBetweenLatLong(
-                        { latitude: locLat, longitude: locLon },
-                        { latitude: elLat, longitude: elLon });
-
-                    return { distanceMi, data: el };
-                });
+                return {
+                    distanceMi,
+                    data: el
+                };
+            });
+            allStationsWithDistances.sort((a: any, b: any) => {
+                return a.distanceMi - b.distanceMi;
             })
-            .then((stationsWithDistance: any) => {
-                stationsWithDistance.sort((a: any, b: any) => {
-                    return a.distanceMi - b.distanceMi;
-                });
-
-                return stationsWithDistance;
-            })
-            .then((stationsWithDistance: any) => {
-                //* returns: { distanceMi, data }
-                return stationsWithDistance.slice(0, count);
-            })
-    }
-
-    getDetails() {
-        return this;
-    }
-
-    getName() {
-        return this.name;
-    }
-
-    getLocation() {
-        return this.location;
-    }
-
-    getStaffing() {
-        return this.staffing;
+            return allStationsWithDistances.slice(0, count);
+        } catch (err) {
+            throw (err);
+        }
     }
 
     getRoadDistanceFrom(station: Station) {

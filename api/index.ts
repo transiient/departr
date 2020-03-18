@@ -1,3 +1,6 @@
+console.clear();
+console.log("Launching departr API...\n\n");
+
 import express, { Request as Req, Response as Res } from 'express';
 
 import { NominatimAPI } from './upstreamRequestHelpers/NominatimAPI';
@@ -6,7 +9,6 @@ import { Service, CallingPoint } from './classes/Service';
 
 require('dotenv').config();
 const uniq = require('lodash/uniq');
-// const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -43,34 +45,36 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /* Static methods */
 /* ************** */
 //* Check if the provided CRS value actually exists
+//todo: (#11) remove and replace with fromCrs
 function isStationCrsValid(crs: string) {
-    // return Station.existsFromCrs(crs)
     return StationCodes.filter((station: any) => station.crs === crs);
 }
 //* Search stations
-function searchTrainStations(query: string) {
-    return Station.search(query)
-        .then((results) => {
-            return results.map((result: any) => {
-                return new Station(
-                    result.crs,
-                    result.name,
-                    result.location,
-                    result.staffing
-                );
-            });
-        })
+async function searchTrainStations(query: string) {
+    try {
+        const searchResults = await Station.search(query);
+        return searchResults.map((result: any) => {
+            return new Station(
+                result.crs,
+                result.name,
+                result.location,
+                result.staffing
+            );
+        });
+    } catch (err) {
+        throw (err);
+    }
 }
 //* Search for the stations closest to a point
 async function findNearbyTrainStations(query: string) {
     // todo: search for various types of stations
-    return new Promise((resolve, reject) => {
-        NominatimAPI.getLatLongFromAddressSearch(query)
-            .then((latLong: any) => {
-                return resolve(Station.findNearest(latLong, 5));
-            })
-            .catch((err) => { return reject(err); });
-    });
+    try {
+        // todo: strict type
+        const latLongFromAddress: any = await NominatimAPI.getLatLongFromAddressSearch(query);
+        return await Station.findNearest(latLongFromAddress, 5);
+    } catch (err) {
+        throw (err);
+    }
 }
 
 //* Check if the train is running on time
@@ -104,78 +108,55 @@ function getOperatorHomepageUrl(operatorCode: string) {
 /* ********** */
 /* Formatters */
 /* ********** */
-//* Returns a Promise resolving to an array of callingPoints
-async function formatCallingPoints(callingPoint: any) {
-    //? NRE sometimes returns no calling points
-    let callingPoints = [];
-
-    if (!Array.isArray(callingPoint)) {
-        //? Direct trains only have single callingPoint, and it's an OBJECT.
-        callingPoints = [callingPoint];
-    } else {
-        callingPoints = callingPoint;
-    }
-
-    //? callingPoints.map returns an array of Promises.
-    //? The result of these promises (an Promise resolving to an array of callingPoints) is then returned.
-    return await Promise.all(callingPoints.map((callingPoint: any) => {
+async function formatCallingPoints(callingPoints: any): Promise<CallingPoint[]> {
+    return await Promise.all(callingPoints.map(async (callingPoint: any) => {
         if (!callingPoint.et)
             callingPoint.et = (callingPoint.at || '');
 
-        return new Promise((resolve, reject) => {
-            Station.fromCrs(callingPoint.crs)
-                .then(station => {
-                    resolve(new CallingPoint(
-                        station,
-                        (callingPoint.et || '').toLowerCase() === "cancelled",
-                        {
-                            scheduled: callingPoint.st,
-                            expected: getExpectedTime(callingPoint.st, callingPoint.et),
-                            onTime: isOnTime(callingPoint.st, callingPoint.et)
-                        }
-                    ));
-                })
-                .catch(err => reject(err));
-        });
+        const station = await Station.fromCrs(callingPoint.crs);
+        return new CallingPoint(
+            station,
+            (callingPoint.et || '').toLowerCase() === "cancelled",
+            {
+                scheduled: callingPoint.st,
+                expected: getExpectedTime(callingPoint.st, callingPoint.et),
+                onTime: isOnTime(callingPoint.st, callingPoint.et)
+            }
+        );
     }));
 }
 
-async function formatServices(services: any) {
-    return await Promise.all(services.map((service: any) => {
-        //? ...callingPointList.callingPoint sometimes doesn't exist.
-        let callingPointsUnformatted = [];
-        if (!service.subsequentCallingPoints || !service.subsequentCallingPoints.callingPointList || !service.subsequentCallingPoints.callingPointList.callingPoint)
-            callingPointsUnformatted = [];
-        else
-            callingPointsUnformatted = service.subsequentCallingPoints.callingPointList.callingPoint;
+async function formatServices(services: any): Promise<Station[]> {
+    try {
+        return await Promise.all(services.map(async (service: any) => {
+            const stationOrigin: Station = await Station.fromCrs(service.origin.location[0].crs);
+            const stationDestination: Station = await Station.fromCrs(service.destination.location[0].crs);
+            const callingPoints: CallingPoint[] = await formatCallingPoints(service.callingPoints);
 
-        return formatCallingPoints(callingPointsUnformatted)
-            .then((callingPoints: any) => {
-                return new Promise(async (resolve, reject) => {
-                    resolve(new Service(
-                        service.serviceType,
-                        service.serviceID,
-                        service.rsid || '',
-                        {
-                            name: service.operator,
-                            code: service.operatorCode,
-                            homepageUrl: getOperatorHomepageUrl(service.operatorCode)
-                        },
-                        await Station.fromCrs(service.origin.location[0].crs),
-                        await Station.fromCrs(service.destination.location[0].crs),
-                        service.etd.toLowerCase() === "cancelled",
-                        {
-                            scheduled: service.std,
-                            expected: getExpectedTime(service.std, service.etd),
-                            onTime: isOnTime(service.std, service.etd)
-                        },
-                        callingPoints,
-                        callingPoints.length === 1
-                    ));
-                });
-            })
-            .catch(err => console.error(err));
-    }));
+            return new Service(
+                service.serviceType,
+                service.serviceID,
+                service.rsid || '',
+                {
+                    name: service.operator,
+                    code: service.operatorCode,
+                    homepageUrl: getOperatorHomepageUrl(service.operatorCode)
+                },
+                stationOrigin,
+                stationDestination,
+                service.etd.toLowerCase() === "cancelled",
+                {
+                    scheduled: service.std,
+                    expected: getExpectedTime(service.std, service.etd),
+                    onTime: isOnTime(service.std, service.etd)
+                },
+                callingPoints,
+                callingPoints.length === 1
+            )
+        }));
+    } catch (err) {
+        throw (err);
+    }
 }
 
 /*
@@ -186,16 +167,20 @@ app.get('/', (req: Req, res: Res) => {
 });
 
 //* Get details for provided CRS
-app.get('/train-station/details/:crs', (req: Req, res: Res) => {
+app.get('/train-station/details/:crs', async (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
 
-    Station.fromCrs(req.params.crs)
-        .then(station => res.json(station))
-        .catch(err => { res.status(500).json(err); console.error(err); });
+    try {
+        const station = await Station.fromCrs(req.params.crs);
+        res.json(station);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json(err.message);
+    }
 });
 
 //* Get services for provided CRS
-app.get('/train-station/services/:crs', (req: Req, res: Res) => {
+app.get('/train-station/services/:crs', async (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
 
     if (!isStationCrsValid) {
@@ -203,34 +188,55 @@ app.get('/train-station/services/:crs', (req: Req, res: Res) => {
         return;
     }
 
-    ldbwsAPI.getDepartureBoard(req.params.crs)
-        .then((board: any) => { return formatServices(board.trainServices.service); })
-        .then((services: any) => { res.json(services); })
-        .catch((err: any) => { res.status(500).json(err); console.error(err); });
+    // todo: consider tidying services in ldbwsapi.ts
+    try {
+        const services = await ldbwsAPI.getDepartures(req.params.crs);
+        const formattedServices = await formatServices(services);// this is causing an issue
+
+        res.json(formattedServices);
+    } catch (err) {
+        console.error(err.message);
+        if (err.message === 'soap:Server: Unexpected server error') {
+            res.status(404).json('This station likely does not exist');
+        } else {
+            res.status(500).json(err.message);
+        }
+    }
 });
 
 // app.get('/train-station/station/next-departure/:crs', ...
 
-app.get('/train-station/search/:crs', (req: Req, res: Res) => {
+app.get('/train-station/search/:crs', async (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
 
-    searchTrainStations(req.params.crs)
-        .then((data: any) => res.json(data))
-        .catch((err: any) => { res.status(500).json(err); console.error(err); });
+    try {
+        const results = await searchTrainStations(req.params.crs);
+        res.json(results);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json(err.message);
+    }
 });
-app.get('/find-stations/:type/:query', (req: Req, res: Res) => {
+// todo: improve API endpoint naming (this can be addressed in wiki API docs)
+app.get('/find-nearby/:type/:query', async (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
-    if (req.params.type !== 'train') res.status(400).json('type must be "train"');
-    findNearbyTrainStations(req.params.query)
-        .then((stations: any) => {
-            res.json(stations.map((station: any) => {
-                return {
-                    distanceMi: station.distanceMi,
-                    ...station.data
-                };
-            }));
-        })
-        .catch((err) => { res.status(500).json(err); });
+
+    if (req.params.type !== 'train') {
+        res.status(400).json('type must be "train"');
+    }
+
+    try {
+        const nearby: any = await findNearbyTrainStations(req.params.query);
+        res.json(await nearby.map((station: any) => {
+            return {
+                distanceMi: station.distanceMi,
+                ...station.data
+            };
+        }));
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json(err.message);
+    }
 });
 
 // Run app
