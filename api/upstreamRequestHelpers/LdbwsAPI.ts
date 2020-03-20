@@ -2,8 +2,6 @@ import { createClientAsync as createSoapClient } from 'soap';
 import { Service, CallingPoint } from '../classes/Service';
 import { Station } from '../classes/Station';
 
-const util = require('util');
-
 // URL from: https://lite.realtime.nationalrail.co.uk/openldbws/
 //? Remain on this URL until a refactor - departr works based on this schema
 const LDBWS_URL: string = 'https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01';
