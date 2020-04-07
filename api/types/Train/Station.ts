@@ -1,35 +1,21 @@
+import {
+    getAllStations,
+    getStationFromCrs,
+    searchStations
+} from '../../db/schemas/Station.factory';
+import {
+    LatLong,
+    LatLongNum,
+    getDistanceBetweenLatLong
+} from '../LatLong';
 require('dotenv').config();
-const departrDBAPI = require('../upstreamRequestHelpers/departrDBAPI').departrDBAPI;
-const departrDB = new departrDBAPI(process.env.DEPARTRDB_URL, process.env.DEPARTRDB_NAME);
 
-interface LatLong {
-    longitude: string;
-    latitude: string;
-}
-interface LatLongNum {
-    longitude: number;
-    latitude: number;
-}
-
-function getDistanceBetweenLatLong(a: LatLongNum, b: LatLongNum) {
-    function deg2rad(deg: number) { return deg * (Math.PI / 180); }
-    const R_KM = 6371;
-    const radLat = deg2rad(b.latitude - a.latitude);
-    const radLon = deg2rad(b.longitude - a.longitude);
-    const x =
-        Math.sin(radLat / 2) * Math.sin(radLat / 2) +
-        Math.cos(deg2rad(a.latitude)) * Math.cos(deg2rad(b.latitude)) *
-        Math.sin(radLon / 2) * Math.sin(radLon / 2);
-    const y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
-    const z = R_KM * y;
-    return z * 0.62137119;
-}
-
-class Station {
+export default class Station {
     crs: string;
     name: string;
     location: LatLong;
     staffing: string;
+    distanceMi: number;
 
     constructor(
         crs: string,
@@ -41,11 +27,12 @@ class Station {
         this.name = name;
         this.location = location;
         this.staffing = staffing;
+        this.distanceMi = 0;
     }
 
     static async fromCrs(crs: string) {
         try {
-            const station = await departrDB.getStationDetails(crs);
+            const station = await getStationFromCrs(crs);
 
             return new Station(
                 station.crs,
@@ -69,15 +56,15 @@ class Station {
     }
 
     static async search(query: string) {
-        return departrDB.searchStations(query);
+        return searchStations(query);
     }
 
-    static async findNearest(location: LatLong, count: number) {
-        const locLat = parseFloat(location.latitude);
-        const locLon = parseFloat(location.longitude);
+    static async closestTo(location: LatLongNum, count: number) {
+        const locLat = location.latitude;
+        const locLon = location.longitude;
 
         try {
-            const allStations = await departrDB.getAllStationDetails();
+            const allStations = await getAllStations();
             const allStationsWithDistances = await allStations.map((el: any) => {
                 //? Convert Mongoose document to JS Object
                 el = el.toObject();
@@ -102,12 +89,30 @@ class Station {
         }
     }
 
-    getRoadDistanceFrom(station: Station) {
-        // todo: implement
+    static async centrePoint(locations: LatLongNum[]) {
         return -1;
     }
-}
 
-export {
-    Station
+    async getDistanceFromStation(stationB: Station): Promise<number> {
+        const stationALoc = {
+            latitude: parseFloat(this.location.latitude),
+            longitude: parseFloat(this.location.longitude)
+        }
+        const stationBLoc = {
+            latitude: parseFloat(stationB.location.latitude),
+            longitude: parseFloat(stationB.location.longitude)
+        }
+
+        return new Promise((r, e) => r(getDistanceBetweenLatLong(stationALoc, stationBLoc)));
+    }
+
+    async getDistanceFromCrs(stationBCrs: string) {
+        const stationB = await Station.fromCrs(stationBCrs)
+        return this.getDistanceFromStation(stationB);
+    }
+
+    async getRoadDistanceFromStation(stationB: Station) {
+        // todo: implement
+        return new Promise((r, e) => e(-1));
+    }
 }

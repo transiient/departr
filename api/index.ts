@@ -3,8 +3,24 @@ console.log("\n\nLaunching departr API...\n");
 
 import express, { Request as Req, Response as Res } from 'express';
 
-import { NominatimAPI } from './upstreamRequestHelpers/NominatimAPI';
-import { Station } from './classes/Station';
+import departrDBAPI from './upstreamRequestHelpers/departrDBAPI';
+import NominatimAPI from './upstreamRequestHelpers/NominatimAPI';
+import LdbwsAPI from './upstreamRequestHelpers/LdbwsAPI';
+import Station from './types/Train/Station';
+
+// Routes
+import __TRAINROUTES__ from './routes/train';
+import __CYCLEROUTES__ from './routes/bike';
+import __BUSROUTES__ from './routes/bus';
+import __METROROUTES__ from './routes/metro';
+import __JOURNEYPLANNERROUTES__ from './routes/journeyPlanner';
+const ROUTES = {
+    train: __TRAINROUTES__,
+    cycle: __CYCLEROUTES__,
+    bus: __BUSROUTES__,
+    metro: __METROROUTES__,
+    journeyPlanner: __JOURNEYPLANNERROUTES__
+};
 
 console.log("\tSetting environment variables...");
 require('dotenv').config();
@@ -14,17 +30,13 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 
-// Classes
-const LdbwsAPI = require('./upstreamRequestHelpers/LdbwsAPI');
-
-// Data
-const StationCodes = require('../src/data/station_codes.json');
-
 const {
     API_PORT,
     LDBWS_TOKEN,
     ORD_USERNAME,
-    ORD_PASSWORD
+    ORD_PASSWORD,
+    DEPARTRDB_NAME,
+    DEPARTRDB_URL
 } = process.env;
 
 if (API_PORT === null || LDBWS_TOKEN === null || ORD_USERNAME === null || ORD_PASSWORD === null) {
@@ -34,7 +46,9 @@ if (API_PORT === null || LDBWS_TOKEN === null || ORD_USERNAME === null || ORD_PA
 }
 
 console.log("\tRegistering LdbwsAPI...");
-const ldbwsAPI = new LdbwsAPI(LDBWS_TOKEN);
+const ldbwsAPI = new LdbwsAPI(LDBWS_TOKEN || '');
+console.log("\tConnecting to departr database asynchronously...");
+const departrDB = new departrDBAPI(DEPARTRDB_URL || '', DEPARTRDB_NAME || '');
 
 console.log("\tRegistering middleware...");
 app.use(cors());
@@ -42,117 +56,53 @@ app.use(morgan('combined'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-/* ************** */
-/* Static methods */
-/* ************** */
-//* Check if the provided CRS value actually exists
-//todo: (#11) remove and replace with fromCrs
-function isStationCrsValid(crs: string) {
-    return StationCodes.filter((station: any) => station.crs === crs);
-}
-//* Search stations
-async function searchTrainStations(query: string) {
-    try {
-        const searchResults = await Station.search(query);
-        return searchResults.map((result: any) => {
-            return new Station(
-                result.crs,
-                result.name,
-                result.location,
-                result.staffing
-            );
-        });
-    } catch (err) {
-        throw (err);
-    }
-}
-//* Search for the stations closest to a point
-async function findNearbyTrainStations(query: string) {
-    // todo: search for various types of stations
-    try {
-        // todo: strict type
-        const latLongFromAddress: any = await NominatimAPI.getLatLongFromAddressSearch(query);
-        return await Station.findNearest(latLongFromAddress, 5);
-    } catch (err) {
-        throw (err);
-    }
-}
-
 /*
-    Hello world
+    ---- ROUTES ----
 */
 app.get('/', (req: Req, res: Res) => {
-    res.send("departr API - try /train-station/details/CLJ - documentation coming soon");
-});
-
-//* Get details for provided CRS
-app.get('/train-station/details/:crs', async (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
 
-    try {
-        const station = await Station.fromCrs(req.params.crs);
-        res.json(station);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json(err.message);
-    }
+    res.json({
+        "message": "departr API is live, and you're connected.",
+        // "routes": [
+        //     "/",
+        //     "/train/:crs/details",
+        //     "/train/:crs/services",
+        //     "/search/:query"
+        // ]
+    });
 });
 
-//* Get services for provided CRS
-app.get('/train-station/services/:crs', async (req: Req, res: Res) => {
+// Train
+ROUTES.train(app, ldbwsAPI);
+ROUTES.cycle(app);
+ROUTES.bus(app);
+ROUTES.metro(app);
+ROUTES.journeyPlanner(app);
+
+//* Search stations
+app.get('/search/:searchQuery', async (req: Req, res: Res) => {
     res.setHeader('Content-Type', 'application/json');
 
-    if (!isStationCrsValid) {
-        res.status(404).json({ message: "Station CRS does not exist" });
-        return;
-    }
+    const searchQuery = req.params.searchQuery;
+    const {
+        type,
+        distance,
+        showNearby,
+        sort
+    } = req.query;
 
-    // todo: consider tidying services in ldbwsapi.ts
     try {
-        const services = await ldbwsAPI.getDepartures(req.params.crs);
-        res.json(services);
-    } catch (err) {
-        console.error(err);
-        if (err.message === 'soap:Server: Unexpected server error') {
-            res.status(404).json('This station likely does not exist');
-        } else {
-            res.status(500).json(err.message);
+        const results = await Station.search(searchQuery);
+        let nearby = []
+        if (req.query.showNearby) {
+            const latLong = await NominatimAPI.getLatLongFromAddressSearch(searchQuery);
+            nearby = await Station.closestTo(latLong, 5);
         }
-    }
-});
-
-// app.get('/train-station/station/next-departure/:crs', ...
-
-app.get('/train-station/search/:crs', async (req: Req, res: Res) => {
-    res.setHeader('Content-Type', 'application/json');
-
-    try {
-        const results = await searchTrainStations(req.params.crs);
-        res.json(results);
+        res.json([...results, ...nearby]);
     } catch (err) {
         console.error(err.message);
-        res.status(500).json(err.message);
-    }
-});
-// todo: improve API endpoint naming (this can be addressed in wiki API docs)
-app.get('/find-nearby/:type/:query', async (req: Req, res: Res) => {
-    res.setHeader('Content-Type', 'application/json');
-
-    if (req.params.type !== 'train') {
-        res.status(400).json('type must be "train"');
-    }
-
-    try {
-        const nearby: any = await findNearbyTrainStations(req.params.query);
-        res.json(await nearby.map((station: any) => {
-            return {
-                distanceMi: station.distanceMi,
-                ...station.data
-            };
-        }));
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json(err.message);
+        res.status(500).json({ "message": err.message });
     }
 });
 

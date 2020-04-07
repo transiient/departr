@@ -21,8 +21,4 @@ StationSchema.index({
     }
 });
 
-const StationModel = mongoose.model('Station', StationSchema);
-
-module.exports = {
-    StationModel
-};
+export default mongoose.model('Station', StationSchema);

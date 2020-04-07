@@ -1,34 +1,67 @@
-const mongoose = require('mongoose');
-const StationFactory = require('../db/schemas/Station.factory');
+import mongoose from 'mongoose';
+import {
+    searchTrainStations,
+    getTrainStationFromCrs,
+    getAllTrainStations
+} from '../db/schemas/Station.factory';
+import {
+    searchBikePoints,
+    getBikePointFromId,
+    getAllBikePoints
+} from '../db/schemas/BikePoint.factory';
 
-class departrDBAPI {
+export default class departrDBAPI {
     constructor(DB_URL, DB_NAME) {
         this.dbOpen = false;
-        mongoose.connect(`mongodb://${DB_URL}/${DB_NAME}`, {
-            useNewUrlParser: true,
-            useFindAndModify: true,
-            useCreateIndex: true,
-            useUnifiedTopology: true
-        });
-        const db = mongoose.connection;
 
-        db.on('error', err => console.error(err));
-        db.on('open', () => this.dbOpen = true);
+        const conn = () => {
+            mongoose.connect(`mongodb://${DB_URL}/${DB_NAME}`, {
+                useNewUrlParser: true,
+                useFindAndModify: true,
+                useCreateIndex: true,
+                useUnifiedTopology: true
+            });
+
+            // @ts-ignore
+            const db = mongoose.connection;
+            db.on('error', (err) => {
+                console.error("Failed to connect to database. Retrying in 5 seconds...");
+                setTimeout(conn, 5000);
+            });
+
+            db.on('open', () => {
+                console.log("Connected to database.");
+                this.dbOpen = true;
+            });
+        };
+
+        conn();
     }
 
-    searchStations(query) {
-        return StationFactory.searchStations(query);
+    // ---- Train ----
+    // Stations
+    searchTrainStations(query) {
+        return searchTrainStations(query);
     }
 
-    getStationDetails(crs) {
-        return StationFactory.getStationFromCrs(crs);
+    getTrainStationDetails(crs) {
+        return getTrainStationFromCrs(crs);
     }
 
-    getAllStationDetails() {
-        return StationFactory.getAllStations();
+    getAllTrainStations() {
+        return getAllTrainStations();
+    }
+    // Services
+    //todo
+
+    // ---- Bike ----
+    searchBikePoints(query) {
+        return searchBikePoints(query);
+    }
+    getBikePointDetails(id) {
+        return getBikePointFromId(id);
+    }
+    getAllBikePoints() {
+        return getAllBikePoints();
     }
 }
-
-module.exports = {
-    departrDBAPI
-};

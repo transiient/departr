@@ -1,9 +1,9 @@
+import StationModel from './Station';
 require('mongoose');
-const Station = require('./Station').StationModel;
 
-function getStationFromCrs(crs) {
+export function getStationFromCrs(crs) {
     return new Promise((resolve, reject) => {
-        let query = Station.findOne({ crs: crs });
+        let query = StationModel.findOne({ crs: crs });
         query.exec((err, data) => {
             if (err) return reject(err);
             return resolve(data);
@@ -11,9 +11,9 @@ function getStationFromCrs(crs) {
     });
 }
 
-function getAllStations() {
+export function getAllStations() {
     return new Promise((resolve, reject) => {
-        let query = Station.find({});
+        let query = StationModel.find({});
         query.exec((err, data) => {
             if (err) return reject(err);
             return resolve(data);
@@ -21,26 +21,22 @@ function getAllStations() {
     });
 }
 
-function searchStations(query) {
+export function searchStations(query) {
     return new Promise((resolve, reject) => {
-        let mongooseQuery = Station.find({
+        let mongooseQuery = StationModel.find({
             $text: { $search: query }
         });
-        mongooseQuery.exec((err, data) => {
+        mongooseQuery.exec((err, docs) => {
             if (err) return reject(err);
-            return resolve(data);
+            return resolve(docs);
         });
     });
 }
 
-function addStation(station) {
+export function addStation(station) {
     return new Promise((resolve, reject) => {
-        let newStation = new Station({
-            crs: station.crs,
-            name: station.name,
-            location: station.location,
-            staffing: station.staffing
-        });
+        // todo: check station is correct before saving - adding types will be fine for this
+        let newStation = new StationModel(station);
 
         return newStation.save((err, doc) => {
             if (err) return reject(err);
@@ -48,10 +44,3 @@ function addStation(station) {
         });
     });
 }
-
-module.exports = {
-    getStationFromCrs,
-    getAllStations,
-    searchStations,
-    addStation
-};

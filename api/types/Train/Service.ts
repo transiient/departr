@@ -1,4 +1,4 @@
-import { Station } from './Station';
+import Station from './Station';
 
 interface ServiceOperator {
     name: string;
@@ -13,7 +13,7 @@ interface ServiceTime {
     onTime: boolean;
 }
 
-class CallingPoint {
+export class CallingPoint {
     station: Station;
     cancelled: boolean;
     time: ServiceTime;
@@ -29,7 +29,7 @@ class CallingPoint {
     }
 }
 
-class Service {
+export class Service {
     serviceType: string;
     serviceID: string;
     retailServiceID: string;
@@ -64,9 +64,4 @@ class Service {
         this.callingPoints = callingPoints;
         this.direct = direct;
     }
-}
-
-export {
-    Service,
-    CallingPoint
 }

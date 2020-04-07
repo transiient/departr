@@ -2,7 +2,7 @@ const axios = require('axios').default;
 
 const NOMINATIM_CANONICAL_URL = 'https://nominatim.openstreetmap.org/';
 
-class NominatimAPI {
+export default class NominatimAPI {
     static async getLatLongFromAddressSearch(query: string) {
         try {
             const nominatimResponse = await axios({
@@ -26,7 +26,3 @@ class NominatimAPI {
         }
     }
 } // class NominatimAPI
-
-export {
-    NominatimAPI
-}

@@ -1,11 +1,11 @@
 import { createClientAsync as createSoapClient } from 'soap';
-import { Service, CallingPoint } from '../classes/Service';
-import { Station } from '../classes/Station';
+import { Service, CallingPoint } from '../types/Train/Service';
+import Station from '../types/Train/Station';
 
 // URL from: https://lite.realtime.nationalrail.co.uk/openldbws/
 //? Remain on this URL until a refactor - departr works based on this schema
-const LDBWS_URL: string = 'https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01';
-const TrainOperatingCompanies = require('../../src/data/train_operating_companies.json');
+const LDBWS_URL = 'https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx?ver=2017-10-01';
+const TrainOperatingCompanies = require('../data/train_operating_companies.json');
 
 /* ********** */
 /*   Getters  */
@@ -131,7 +131,7 @@ async function formatService(service: any): Promise<Service> {
     }
 }
 
-class LdbwsAPI {
+export default class LdbwsAPI {
     authCredentials: {
         token: string
     };
@@ -182,5 +182,3 @@ class LdbwsAPI {
         }
     }
 }
-
-module.exports = LdbwsAPI;
