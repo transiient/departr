@@ -1,3 +1,5 @@
+***Note to visitors:*** I'm planning to rewrite departr from scratch, but haven't started yet. If you're interested in this project, please get in touch, and we'll work together!
+
 # departr - Train Times
 
 departr allows you to search for train stations and view their departures.
@@ -47,7 +49,11 @@ Run one of the following to serve the site and/or proxy server:
 
 ### Future Goals
 
-* Create a plan for monetisation, such as premium features/API
+* Create a plan for monetisation
+   * Premium features
+   * Early-access features
+   * API access
+   * Advanced notifications
 * Allow public access to API with authentication middleware
 * Cache station results for up to 30 seconds
 * Combine realtime expected times with timetabled times for future results
