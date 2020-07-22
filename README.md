@@ -27,15 +27,23 @@ To run departr yourself...
 ## Run
 
 Run one of the following to serve the site and/or proxy server:
-    * `yarn serve` to run the full app
-    * `yarn start` to run the front-end React application *only*
-    * `yarn server` to run the proxy server and database
-    * `yarn server-ts` to run *only* the proxy server, without a database (this is pointless)
+
+* `yarn serve` to run the full app
+* `yarn start` to run the front-end React application *only*
+* `yarn server` to run the proxy server and database
 
 ## Project Aims
 
 * Fully responsive front-end
 * Remain simple and easy-to-use
+
+### Technologies
+
+* TypeScript
+* MongoDB
+* Express
+* React.js
+* MERN Stack
 
 ### Future Goals
 
