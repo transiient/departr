@@ -27,6 +27,10 @@ To run departr:
 
 Run one of the following to serve the site and/or API server:
 
+-   `yarn serve` to run the full app
+-   `yarn start` to run the front-end React application _only_
+-   `yarn server` to run the proxy server and database
+
 **NOTE**: MongoDB must be running as a service before starting the API server. To do this on Windows, use the following command: `powershell -Command \"Start-Process -FilePath 'net' -ArgumentList 'start MongoDB' -Verb runAs\"`
 
 -   `cd frontend && yarn start` to run the front-end React application _only_
@@ -42,7 +46,7 @@ Run one of the following to serve the site and/or API server:
 -   Enable tracking of specific services with notifications on PWA
 -   Integrate bus, cycle, and coach tracking services, with connections to train services for full journey planning
 
-### Plans
+## Plans
 
 1. Build MVP backend with the following:
     - Accounts (log in, log out, register)
@@ -55,6 +59,20 @@ Run one of the following to serve the site and/or API server:
     - Locations search results
     - Station departures
     - 30s cache timeout
+
+### Future Goals
+
+-   Create a plan for monetisation
+    -   Premium features
+    -   Early-access features
+    -   API access
+    -   Advanced notifications
+-   Allow public access to API with authentication middleware
+-   Cache station results for up to 30 seconds
+-   Combine realtime expected times with timetabled times for future results
+-   Allow a user to make an account and save favourite stations/services/routes
+-   Enable tracking of specific services with notifications on PWA
+-   Integrate bus, cycle, and coach tracking services, with connections to train services for full journey planning
 
 ## Licence
 
