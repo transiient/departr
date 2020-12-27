@@ -1,79 +1,84 @@
-# departr - Train Times
+# departr - the Travel Tracker.
 
-departr is a project with a simple aim: **to allow you to view station departures**.
+departr is a project **led by a passion for travel**. Originally a rail departure tracker, departr is now being re-written from the ground up to become a one-stop destination for travel.
 
-There are plans to enhance the service. These include the addition of user accounts for favourite journeys, timetable synchronisation, notifications, and more. See **Future Goals** below for more information.
+**departr is looking for contributors!** If you're interested, feel free to start working on a feature which hasn't yet been claimed. See the GitHub Projects page for details, or ask a maintainer.
 
-**departr is looking for contributors!** `git clone` and start hacking.
+## Planned Features
 
-## Prerequisites
+-   **Travel Planning**
+    -   View station departures
+        -   Rail **[MVP]**
+        -   Bus
+        -   Tram
+        -   Cycle
+        -   Metro (Tube)
+    -   Save and track journeys
+    -   Search and display destinations
+        -   Cities and attractions **[MVP]**
+        -   Destination permalinks **[MVP]**
+-   **Destinations, Sharing, and Accounts**
+    -   User accounts
+        -   Log in, log out, user registration **[MVP]**
+        -   Username, name, bio, social links, etc. **[MVP]**
+    -   Share destinations
+        -   Share with other users
+        -   Link sharing **[MVP]**
+    -   Share photos from your journey
+        -   Direct uploads
+        -   Public, private, unlisted
+        -   External links
+            -   Instagram
+            -   Flickr
+            -   Pinterest
+-   **Following and Notifications**
+    -   Follow travellers
+    -   Follow departures and routes
+    -   Departure notifications
+    -   Traveller "following" notifications
+        -   New destinations
+        -   New photos
+        -   Updates and news
+
+### Planned Features (Future)
+
+-   Realtime "expected" times match scheduled times
+-   Cache
+    -   Departure results (up to 30s)
+    -   Stations, station status (up to 6h, status up to 30m)
+-   Monetisation _(unfortunately we have to make money somehow, to keep the platform running)_
+    -   Premium/early-access features
+    -   Private API
+    -   Advanced Features
+-   Public API
+-   Notifications on PWA
+-   Track multiple services, enabling multi-mode connections for full journey planning
+
+## Run departr
 
 departr should run on Windows, Linux, and macOS. A Docker image is planned for the future, also.
 
-To run departr:
+You can self-host departr, but there's a few things you need to do first:
 
 1. Register with OpenLDBWS and get an authentication token [here](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration/)
 2. Register with the NRE Open Rail Data service
 3. Copy `/example.env` to `/.env` and add your credentials
-4. **Windows only:** Add `mongod` from MongoDB installation to `PATH` and install it as a system service
-5. **First-time only:** Run `yarn populate-db`
-6. Run `yarn serve` to start both the API and the React app concurrently
+4. Start MongoDB
+    - **Windows:** Add `mongod` from MongoDB installation to `PATH` and install it as a system service
+    - **UNIX:** Start the MongoDB system service (usually with systemd)
+5. Start the API and frontend independently
 
-**The API requires a MongoDB instance to function.** If you're on Windows, _`mongod` should exist in `PATH`_. departr requires this because some of the data used by departr comes from the NRE API in an XML file, which is a painfully slow download. This then has to be parsed to JSON. In the future, user accounts will be stored in this database too.
+**The API uses MongoDB as a database.** That's how we store stuff. **Parts of the stored data will be checked for integrity on each start** and at certain periods (probably each 12 hours); however, this will be done in the background when data already exists. A 30MB file will be downloaded, painfully slowly, every time the database is populated.
 
-**The database must be populated before the server is first started.** To do this, run `yarn populate-db`. A 30MB file will be downloaded every time the database is populated. Populating the stations database _will take a very, very long time_, because the NRE server is incredibly slow. For this reason, **avoid populating the database unless you know about an update.** In the future, these updates will be run automatically by departr, in the background, to ensure service reliability.
-
-## Run
+### yarn Scripts
 
 Run one of the following to serve the site and/or API server:
 
--   `yarn serve` to run the full app
--   `yarn start` to run the front-end React application _only_
--   `yarn server` to run the proxy server and database
+-   `cd frontend && yarn dev` to start the frontend application (website)
+-   `cd backend && yarn dev` to start the backend application (API)
 
-**NOTE**: MongoDB must be running as a service before starting the API server. To do this on Windows, use the following command: `powershell -Command \"Start-Process -FilePath 'net' -ArgumentList 'start MongoDB' -Verb runAs\"`
-
--   `cd frontend && yarn start` to run the front-end React application _only_
--   `cd backend && yarn server` to run the departr API server and database
-
-## Goals
-
--   Create a plan for monetisation, such as premium features/API
--   Allow public access to API with authentication middleware
--   Cache station results for up to 30 seconds
--   Combine realtime expected times with timetabled times for future results
--   Allow a user to make an account and save favourite stations/services/routes
--   Enable tracking of specific services with notifications on PWA
--   Integrate bus, cycle, and coach tracking services, with connections to train services for full journey planning
-
-## Plans
-
-1. Build MVP backend with the following:
-    - Accounts (log in, log out, register)
-    - RAIL
-        - Stations search
-        - Locations search
-        - Station departures
-        - Nearby departures
-2. Cache the following:
-    - Locations search results
-    - Station departures
-    - 30s cache timeout
-
-### Future Goals
-
--   Create a plan for monetisation
-    -   Premium features
-    -   Early-access features
-    -   API access
-    -   Advanced notifications
--   Allow public access to API with authentication middleware
--   Cache station results for up to 30 seconds
--   Combine realtime expected times with timetabled times for future results
--   Allow a user to make an account and save favourite stations/services/routes
--   Enable tracking of specific services with notifications on PWA
--   Integrate bus, cycle, and coach tracking services, with connections to train services for full journey planning
+**NOTE**: MongoDB must be running as a service before starting the API server. On Windows, use the following command: `powershell -Command \"Start-Process -FilePath 'net' -ArgumentList 'start MongoDB' -Verb runAs\"`
 
 ## Licence
 
-This project is currently licenced under the MIT licence.
+**The entire departr project is licenced under the MIT licence.** Please feel free to fork and extend it!
