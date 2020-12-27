@@ -1,9 +1,9 @@
-import StationModel from './Station';
-require('mongoose');
+import TOCModel from "./TOC";
+require("mongoose");
 
-export function getStationFromCrs(crs) {
+export function getTOCFromName(name) {
     return new Promise((resolve, reject) => {
-        let query = StationModel.findOne({ crs: crs });
+        let query = TOCModel.findOne({ name });
         query.exec((err, data) => {
             if (err) return reject(err);
             return resolve(data);
@@ -11,9 +11,9 @@ export function getStationFromCrs(crs) {
     });
 }
 
-export function getAllStations() {
+export function getAllTOCs() {
     return new Promise((resolve, reject) => {
-        let query = StationModel.find({});
+        let query = TOCModel.find({});
         query.exec((err, data) => {
             if (err) return reject(err);
             return resolve(data);
@@ -21,10 +21,10 @@ export function getAllStations() {
     });
 }
 
-export function searchStations(query) {
+export function searchTOCs(query) {
     return new Promise((resolve, reject) => {
-        let mongooseQuery = StationModel.find({
-            $text: { $search: query }
+        let mongooseQuery = TOCModel.find({
+            $text: { $search: query },
         });
         mongooseQuery.exec((err, docs) => {
             if (err) return reject(err);
@@ -33,12 +33,13 @@ export function searchStations(query) {
     });
 }
 
-export function addStation(station) {
+export function addTOC(toc) {
     return new Promise((resolve, reject) => {
-        // todo: check station is correct before saving - adding types will be fine for this
-        let newStation = new StationModel(station);
+        // todo: check TOC is correct before saving
+        // adding types will be fine for this
+        let newTOC = new TOCModel(toc);
 
-        return newStation.save((err, doc) => {
+        return newTOC.save((err, doc) => {
             if (err) return reject(err);
             resolve(doc);
         });

@@ -1,4 +1,4 @@
-import Station from './Station';
+import RailStation from "./Station";
 
 interface ServiceOperator {
     name: string;
@@ -14,15 +14,11 @@ interface ServiceTime {
 }
 
 export class CallingPoint {
-    station: Station;
+    station: RailStation;
     cancelled: boolean;
     time: ServiceTime;
 
-    constructor(
-        station: Station,
-        cancelled: boolean,
-        time: ServiceTime
-    ) {
+    constructor(station: RailStation, cancelled: boolean, time: ServiceTime) {
         this.station = station;
         this.cancelled = cancelled;
         this.time = time;
@@ -34,8 +30,8 @@ export class Service {
     serviceID: string;
     retailServiceID: string;
     operator: ServiceOperator;
-    stationOrigin: Station;
-    stationDestination: Station;
+    stationOrigin: RailStation;
+    stationDestination: RailStation;
     cancelled: boolean;
     time: ServiceTime;
     callingPoints: CallingPoint[];
@@ -46,8 +42,8 @@ export class Service {
         serviceID: string,
         retailServiceID: string,
         operator: ServiceOperator,
-        stationOrigin: Station,
-        stationDestination: Station,
+        stationOrigin: RailStation,
+        stationDestination: RailStation,
         cancelled: boolean,
         time: ServiceTime,
         callingPoints: CallingPoint[],

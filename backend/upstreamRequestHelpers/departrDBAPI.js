@@ -1,14 +1,14 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 import {
-    searchTrainStations,
-    getTrainStationFromCrs,
-    getAllTrainStations
-} from '../db/schemas/Station.factory';
+    searchRailStations,
+    getRailStationFromCrs,
+    getAllRailStations,
+} from "../db/schemas/RailStation.factory";
 import {
     searchBikePoints,
     getBikePointFromId,
-    getAllBikePoints
-} from '../db/schemas/BikePoint.factory';
+    getAllBikePoints,
+} from "../db/schemas/BikePoint.factory";
 
 export default class departrDBAPI {
     constructor(DB_URL, DB_NAME) {
@@ -19,17 +19,17 @@ export default class departrDBAPI {
                 useNewUrlParser: true,
                 useFindAndModify: true,
                 useCreateIndex: true,
-                useUnifiedTopology: true
+                useUnifiedTopology: true,
             });
 
             // @ts-ignore
             const db = mongoose.connection;
-            db.on('error', (err) => {
+            db.on("error", (err) => {
                 console.error("Failed to connect to database. Retrying in 5 seconds...");
                 setTimeout(conn, 5000);
             });
 
-            db.on('open', () => {
+            db.on("open", () => {
                 console.log("Connected to database.");
                 this.dbOpen = true;
             });
@@ -38,18 +38,18 @@ export default class departrDBAPI {
         conn();
     }
 
-    // ---- Train ----
+    // ---- Rail ----
     // Stations
-    searchTrainStations(query) {
-        return searchTrainStations(query);
+    searchRailStations(query) {
+        return searchRailStations(query);
     }
 
-    getTrainStationDetails(crs) {
-        return getTrainStationFromCrs(crs);
+    getRailStationDetails(crs) {
+        return getRailStationFromCrs(crs);
     }
 
-    getAllTrainStations() {
-        return getAllTrainStations();
+    getAllRailStations() {
+        return getAllRailStations();
     }
     // Services
     //todo

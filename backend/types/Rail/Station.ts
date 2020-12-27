@@ -1,28 +1,19 @@
 import {
-    getAllStations,
-    getStationFromCrs,
-    searchStations
-} from '../../db/schemas/Station.factory';
-import {
-    LatLong,
-    LatLongNum,
-    getDistanceBetweenLatLong
-} from '../LatLong';
-require('dotenv').config();
+    getAllRailStations,
+    getRailStationFromCrs,
+    searchRailStations,
+} from "../../db/schemas/RailStation.factory";
+import { LatLong, LatLongNum, getDistanceBetweenLatLong } from "../LatLong";
+require("dotenv").config();
 
-export default class Station {
+export default class RailStation {
     crs: string;
     name: string;
     location: LatLong;
     staffing: string;
     distanceMi: number;
 
-    constructor(
-        crs: string,
-        name: string,
-        location: LatLong,
-        staffing: string
-    ) {
+    constructor(crs: string, name: string, location: LatLong, staffing: string) {
         this.crs = crs;
         this.name = name;
         this.location = location;
@@ -32,16 +23,11 @@ export default class Station {
 
     static async fromCrs(crs: string) {
         try {
-            const station = await getStationFromCrs(crs);
+            const station = await getRailStationFromCrs(crs);
 
-            return new Station(
-                station.crs,
-                station.name,
-                station.location,
-                station.staffing
-            );
+            return new RailStation(station.crs, station.name, station.location, station.staffing);
         } catch (err) {
-            throw (err);
+            throw err;
         }
     }
 
@@ -56,7 +42,7 @@ export default class Station {
     }
 
     static async search(query: string) {
-        return searchStations(query);
+        return searchRailStations(query);
     }
 
     static async closestTo(location: LatLongNum, count: number) {
@@ -64,7 +50,7 @@ export default class Station {
         const locLon = location.longitude;
 
         try {
-            const allStations = await getAllStations();
+            const allStations = await getAllRailStations();
             const allStationsWithDistances = await allStations.map((el: any) => {
                 //? Convert Mongoose document to JS Object
                 el = el.toObject();
@@ -73,19 +59,20 @@ export default class Station {
                 const elLon = parseFloat(el.location.longitude);
                 const distanceMi = getDistanceBetweenLatLong(
                     { latitude: locLat, longitude: locLon },
-                    { latitude: elLat, longitude: elLon });
+                    { latitude: elLat, longitude: elLon }
+                );
 
                 return {
                     distanceMi,
-                    data: el
+                    data: el,
                 };
             });
             allStationsWithDistances.sort((a: any, b: any) => {
                 return a.distanceMi - b.distanceMi;
-            })
+            });
             return allStationsWithDistances.slice(0, count);
         } catch (err) {
-            throw (err);
+            throw err;
         }
     }
 
@@ -93,25 +80,25 @@ export default class Station {
         return -1;
     }
 
-    async getDistanceFromStation(stationB: Station): Promise<number> {
+    async getDistanceFromStation(stationB: RailStation): Promise<number> {
         const stationALoc = {
             latitude: parseFloat(this.location.latitude),
-            longitude: parseFloat(this.location.longitude)
-        }
+            longitude: parseFloat(this.location.longitude),
+        };
         const stationBLoc = {
             latitude: parseFloat(stationB.location.latitude),
-            longitude: parseFloat(stationB.location.longitude)
-        }
+            longitude: parseFloat(stationB.location.longitude),
+        };
 
         return new Promise((r, e) => r(getDistanceBetweenLatLong(stationALoc, stationBLoc)));
     }
 
     async getDistanceFromCrs(stationBCrs: string) {
-        const stationB = await Station.fromCrs(stationBCrs)
+        const stationB = await RailStation.fromCrs(stationBCrs);
         return this.getDistanceFromStation(stationB);
     }
 
-    async getRoadDistanceFromStation(stationB: Station) {
+    async getRoadDistanceFromStation(stationB: RailStation) {
         // todo: implement
         return new Promise((r, e) => e(-1));
     }
