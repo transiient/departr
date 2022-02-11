@@ -10,7 +10,7 @@
         "leaflet": "^1.6.0",
         "modern-normalize": "^0.6.0",
         "moment": "^2.24.0",
-        "node-sass": "^4.13.0",
+        "node-sass": "^7.0.0",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
         "react-helmet": "^5.2.1",
