@@ -9,7 +9,7 @@
         "fuzzysearch": "^1.0.3",
         "leaflet": "^1.6.0",
         "modern-normalize": "^0.6.0",
-        "moment": "^2.24.0",
+        "moment": "^2.29.4",
         "node-sass": "^4.13.0",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
